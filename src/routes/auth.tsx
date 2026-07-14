@@ -123,7 +123,7 @@ function AuthPage() {
                   <p className="text-xs text-destructive">{form.formState.errors.email.message}</p>
                 )}
                 <Field label="Password" icon={<Lock className="h-4 w-4" />}>
-                  <Input type="password" autoComplete="current-password" {...form.register("password")} />
+                  <PasswordInput autoComplete="current-password" {...form.register("password")} />
                 </Field>
                 {form.formState.errors.password && (
                   <p className="text-xs text-destructive">{form.formState.errors.password.message}</p>
