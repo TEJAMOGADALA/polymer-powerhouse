@@ -133,7 +133,15 @@ function AuthPage() {
                 </Button>
               </form>
               <div className="mt-4 flex justify-between text-sm">
-                <button type="button" className="text-primary hover:underline" onClick={() => setMode("forgot")}>
+                <button
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={() => {
+                    const currentEmail = form.getValues("email").trim();
+                    if (currentEmail) setRecoveryEmail(currentEmail);
+                    setMode("forgot");
+                  }}
+                >
                   Forgot password?
                 </button>
                 <button type="button" className="text-primary hover:underline" onClick={() => setMode("signup")}>
