@@ -240,10 +240,10 @@ function ResetPasswordForm({ busy, onSubmit }: { busy: boolean; onSubmit: (p: st
       <h2 className="text-xl font-bold">Set new password</h2>
       <div className="mt-6 space-y-4">
         <Field label="New password" icon={<KeyRound className="h-4 w-4" />}>
-          <Input type="password" value={pass} onChange={(e) => setPass(e.target.value)} />
+          <PasswordInput value={pass} onChange={(e) => setPass(e.target.value)} />
         </Field>
         <Field label="Confirm password" icon={<KeyRound className="h-4 w-4" />}>
-          <Input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+          <PasswordInput value={confirm} onChange={(e) => setConfirm(e.target.value)} />
         </Field>
         <Button
           className="w-full"
