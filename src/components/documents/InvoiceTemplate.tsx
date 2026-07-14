@@ -52,7 +52,10 @@ export function emptyInvoiceData(): InvoiceData {
     placeOfSupply: "",
     vehicleNo: "",
     rows: Array.from({ length: ROW_COUNT }, () => ({
-      desc: "", hsn: "", qty: "", rate: "",
+      desc: "",
+      hsn: "",
+      qty: "",
+      rate: "",
     })),
     amountInWords: "",
     cgstRate: "9",
@@ -62,8 +65,7 @@ export function emptyInvoiceData(): InvoiceData {
   };
 }
 
-const fmt = (n: number) =>
-  n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 interface Props {
   profile: CompanyProfile;
@@ -125,8 +127,14 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
   const rateLabel = (r: TaxRate) => (r === "0" ? "NONE" : `${r}%`);
 
   const TaxSelect = ({
-    value: v, onChange: oc, options,
-  }: { value: TaxRate; onChange: (v: TaxRate) => void; options: TaxRate[] }) => (
+    value: v,
+    onChange: oc,
+    options,
+  }: {
+    value: TaxRate;
+    onChange: (v: TaxRate) => void;
+    options: TaxRate[];
+  }) => (
     <select
       value={v}
       onChange={(e) => oc(e.target.value as TaxRate)}
@@ -140,7 +148,9 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
       }}
     >
       {options.map((o) => (
-        <option key={o} value={o}>{rateLabel(o)}</option>
+        <option key={o} value={o}>
+          {rateLabel(o)}
+        </option>
       ))}
     </select>
   );
@@ -155,9 +165,15 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
           rightMeta={
             <div
               style={{
-                position: "absolute", right: 30, top: 60, fontSize: 12,
-                display: "flex", flexDirection: "column", gap: 4,
-                background: "#fff", padding: "2px 6px",
+                position: "absolute",
+                right: 30,
+                top: 60,
+                fontSize: 12,
+                display: "flex",
+                flexDirection: "column",
+                gap: 4,
+                background: "#fff",
+                padding: "2px 6px",
               }}
             >
               <div style={{ display: "flex", gap: 4 }}>
@@ -192,7 +208,9 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
         </div>
 
         {/* Buyer / Supply meta — bigger buyer name area */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: "2px solid #0a1e5c", fontSize: 12 }}>
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: "2px solid #0a1e5c", fontSize: 12 }}
+        >
           <div style={{ padding: "6px 8px", borderRight: "1.5px solid #0a1e5c" }}>
             <div style={{ display: "flex", gap: 4, alignItems: "start" }}>
               <strong style={{ whiteSpace: "nowrap" }}>Buyer`s Name :</strong>
@@ -205,20 +223,49 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                 style={{ borderBottom: "1px dotted #0a1e5c", minHeight: 60, width: "100%" }}
               />
             </div>
-            <div style={{ marginTop: 8 }}><strong>GSTIN :</strong> {inp(data.buyerGstin, (v) => update({ buyerGstin: v }), { width: "70%" })}</div>
+            <div style={{ marginTop: 8 }}>
+              <strong>GSTIN :</strong> {inp(data.buyerGstin, (v) => update({ buyerGstin: v }), { width: "70%" })}
+            </div>
             <div style={{ display: "flex", gap: 16, marginTop: 6 }}>
-              <div style={{ flex: 1 }}><strong>State :</strong> {inp(data.buyerState, (v) => update({ buyerState: v }))}</div>
-              <div style={{ flex: 1 }}><strong>Code :</strong> {inp(data.buyerCode, (v) => update({ buyerCode: v }))}</div>
+              <div style={{ flex: 1 }}>
+                <strong>State :</strong> {inp(data.buyerState, (v) => update({ buyerState: v }))}
+              </div>
+              <div style={{ flex: 1 }}>
+                <strong>Code :</strong> {inp(data.buyerCode, (v) => update({ buyerCode: v }))}
+              </div>
             </div>
           </div>
-          <div style={{ padding: "6px 8px", display: "grid", gridTemplateColumns: "auto 1fr", rowGap: 3, columnGap: 6 }}>
-            <span><strong>Reverse Charge :(Y/N):</strong></span>{inp(data.reverseCharge, (v) => update({ reverseCharge: v }))}
-            <span><strong>State</strong> :</span>{inp(data.supplyState, (v) => update({ supplyState: v }))}
-            <span><strong>Code</strong> :</span>{inp(data.supplyCode, (v) => update({ supplyCode: v }))}
-            <span><strong>Date of Supply</strong> :</span>{inp(data.dateOfSupply, (v) => update({ dateOfSupply: v }))}
-            <span><strong>Mode of Transport</strong> :</span>{inp(data.modeOfTransport, (v) => update({ modeOfTransport: v }))}
-            <span><strong>Place of Supply</strong> :</span>{inp(data.placeOfSupply, (v) => update({ placeOfSupply: v }))}
-            <span><strong>Vechicle no.</strong> :</span>{inp(data.vehicleNo, (v) => update({ vehicleNo: v }))}
+          <div
+            style={{ padding: "6px 8px", display: "grid", gridTemplateColumns: "auto 1fr", rowGap: 3, columnGap: 6 }}
+          >
+            <span>
+              <strong>Reverse Charge :(Y/N):</strong>
+            </span>
+            {inp(data.reverseCharge, (v) => update({ reverseCharge: v }))}
+            <span>
+              <strong>State</strong> :
+            </span>
+            {inp(data.supplyState, (v) => update({ supplyState: v }))}
+            <span>
+              <strong>Code</strong> :
+            </span>
+            {inp(data.supplyCode, (v) => update({ supplyCode: v }))}
+            <span>
+              <strong>Date of Supply</strong> :
+            </span>
+            {inp(data.dateOfSupply, (v) => update({ dateOfSupply: v }))}
+            <span>
+              <strong>Mode of Transport</strong> :
+            </span>
+            {inp(data.modeOfTransport, (v) => update({ modeOfTransport: v }))}
+            <span>
+              <strong>Place of Supply</strong> :
+            </span>
+            {inp(data.placeOfSupply, (v) => update({ placeOfSupply: v }))}
+            <span>
+              <strong>Vechicle no.</strong> :
+            </span>
+            {inp(data.vehicleNo, (v) => update({ vehicleNo: v }))}
           </div>
         </div>
 
@@ -247,13 +294,21 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
               <tr key={i} style={{ height: 28 }}>
                 <td style={{ textAlign: "center" }}>{i + 1}</td>
                 <td>
-                  <input className="doc-input" value={r.desc}
-                    onChange={(e) => updateRow(i, "desc", e.target.value)} readOnly={readOnly} />
+                  <input
+                    className="doc-input"
+                    value={r.desc}
+                    onChange={(e) => updateRow(i, "desc", e.target.value)}
+                    readOnly={readOnly}
+                  />
                 </td>
                 <td>
-                  <input className="doc-input" value={r.hsn}
-                    onChange={(e) => updateRow(i, "hsn", e.target.value)} readOnly={readOnly}
-                    style={{ textAlign: "center" }} />
+                  <input
+                    className="doc-input"
+                    value={r.hsn}
+                    onChange={(e) => updateRow(i, "hsn", e.target.value)}
+                    readOnly={readOnly}
+                    style={{ textAlign: "center" }}
+                  />
                 </td>
                 <td style={{ textAlign: "center" }}>
                   {readOnly ? (
@@ -269,14 +324,18 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                       }}
                       inputMode="decimal"
                       style={{ textAlign: "center" }}
-                      placeholder="e.g. 50"
                     />
                   )}
                 </td>
                 <td>
-                  <input className="doc-input" value={r.rate}
+                  <input
+                    className="doc-input"
+                    value={r.rate}
                     onChange={(e) => updateRow(i, "rate", e.target.value.replace(/[^\d.]/g, ""))}
-                    readOnly={readOnly} inputMode="decimal" style={{ textAlign: "center" }} />
+                    readOnly={readOnly}
+                    inputMode="decimal"
+                    style={{ textAlign: "center" }}
+                  />
                 </td>
                 <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
                   {rowAmounts[i] > 0 ? `₹ ${fmt(rowAmounts[i])}` : ""}
@@ -295,12 +354,23 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                 <td colSpan={4} style={{ border: "none" }} />
                 <td style={{ fontWeight: 700, textAlign: "right", padding: "3px 6px" }}>
                   {kind === "cgst" ? (
-                    <>CGST @ <TaxSelect value={data.cgstRate} onChange={(v) => update({ cgstRate: v })} options={rateOpts} /></>
+                    <>
+                      CGST @{" "}
+                      <TaxSelect value={data.cgstRate} onChange={(v) => update({ cgstRate: v })} options={rateOpts} />
+                    </>
                   ) : kind === "sgst" ? (
-                    <>SGST @ <TaxSelect value={data.sgstRate} onChange={(v) => update({ sgstRate: v })} options={rateOpts} /></>
+                    <>
+                      SGST @{" "}
+                      <TaxSelect value={data.sgstRate} onChange={(v) => update({ sgstRate: v })} options={rateOpts} />
+                    </>
                   ) : kind === "igst" ? (
-                    <>IGST @ <TaxSelect value={data.igstRate} onChange={(v) => update({ igstRate: v })} options={igstOpts} /></>
-                  ) : label}
+                    <>
+                      IGST @{" "}
+                      <TaxSelect value={data.igstRate} onChange={(v) => update({ igstRate: v })} options={igstOpts} />
+                    </>
+                  ) : (
+                    label
+                  )}
                 </td>
                 <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums", fontWeight: kind ? 500 : 700 }}>
                   {val > 0 ? `₹ ${fmt(val)}` : "—"}
@@ -310,7 +380,14 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
             <tr>
               <td colSpan={4} style={{ border: "none" }} />
               <td style={{ fontWeight: 800, textAlign: "right", background: "#f4f8ff" }}>GRAND TOTAL</td>
-              <td style={{ fontWeight: 800, textAlign: "right", background: "#f4f8ff", fontVariantNumeric: "tabular-nums" }}>
+              <td
+                style={{
+                  fontWeight: 800,
+                  textAlign: "right",
+                  background: "#f4f8ff",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
                 ₹ {fmt(grandTotal)}
               </td>
             </tr>
@@ -318,9 +395,13 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
               <td colSpan={4} style={{ border: "none" }} />
               <td style={{ padding: "3px 6px", textAlign: "right" }}>GST on Reverse Charge</td>
               <td>
-                <input className="doc-input" value={data.gstReverse}
+                <input
+                  className="doc-input"
+                  value={data.gstReverse}
                   onChange={(e) => update({ gstReverse: e.target.value })}
-                  readOnly={readOnly} style={{ textAlign: "right" }} />
+                  readOnly={readOnly}
+                  style={{ textAlign: "right" }}
+                />
               </td>
             </tr>
           </tbody>
@@ -328,14 +409,30 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
 
         {/* Words */}
         <div style={{ fontSize: 12, padding: "6px 8px", borderBottom: "1.5px solid #0a1e5c" }}>
-          <div><strong>TOTAL AMOUNT (in words) :</strong></div>
-          <textarea className="doc-textarea" rows={2} value={data.amountInWords}
+          <div>
+            <strong>TOTAL AMOUNT (in words) :</strong>
+          </div>
+          <textarea
+            className="doc-textarea"
+            rows={2}
+            value={data.amountInWords}
             onChange={(e) => update({ amountInWords: e.target.value })}
-            readOnly={readOnly} style={{ marginTop: 4 }} />
+            readOnly={readOnly}
+            style={{ marginTop: 4 }}
+          />
         </div>
 
         {/* Bank + declaration */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "8px 4px", fontSize: 11.5, gap: 8, marginTop: "auto" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            padding: "8px 4px",
+            fontSize: 11.5,
+            gap: 8,
+            marginTop: "auto",
+          }}
+        >
           <div>
             <div style={{ textDecoration: "underline", fontWeight: 700 }}>Bank Details :</div>
             <div>{profile.bank.bank}</div>
@@ -349,11 +446,20 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
             {profile.udyam && <div>{profile.udyam}</div>}
           </div>
           <div style={{ fontSize: 11 }}>
-            <strong>Declaration :</strong> We declare that the particulars given above are true and correct in every respect.
+            <strong>Declaration :</strong> We declare that the particulars given above are true and correct in every
+            respect.
             <div style={{ marginTop: 24, textAlign: "right", fontWeight: 700 }}>For {profile.name}</div>
           </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid #0a1e5c", padding: "6px 4px", fontSize: 11 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            borderTop: "1px solid #0a1e5c",
+            padding: "6px 4px",
+            fontSize: 11,
+          }}
+        >
           <div>* All disputes are subject to Visakhapatnam jurisdiction only</div>
           <div style={{ fontWeight: 700 }}>Authorised Signature</div>
         </div>
