@@ -232,6 +232,27 @@ function Field({ label, icon, children }: { label: string; icon: React.ReactNode
   );
 }
 
+const PasswordInput = React.forwardRef<HTMLInputElement, React.ComponentProps<typeof Input>>(
+  (props, ref) => {
+    const [show, setShow] = useState(false);
+    return (
+      <div className="relative">
+        <Input ref={ref} type={show ? "text" : "password"} {...props} className="pr-10" />
+        <button
+          type="button"
+          tabIndex={-1}
+          onClick={() => setShow((s) => !s)}
+          aria-label={show ? "Hide password" : "Show password"}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+        >
+          {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+      </div>
+    );
+  }
+);
+PasswordInput.displayName = "PasswordInput";
+
 function ResetPasswordForm({ busy, onSubmit }: { busy: boolean; onSubmit: (p: string) => void }) {
   const [pass, setPass] = useState("");
   const [confirm, setConfirm] = useState("");
