@@ -226,12 +226,14 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
             <div style={{ marginTop: 8 }}>
               <strong>GSTIN :</strong> {inp(data.buyerGstin, (v) => update({ buyerGstin: v }), { width: "70%" })}
             </div>
-            <div style={{ display: "flex", gap: 16, marginTop: 6 }}>
-              <div style={{ flex: 1 }}>
-                <strong>State :</strong> {inp(data.buyerState, (v) => update({ buyerState: v }))}
+            <div style={{ display: "flex", gap: 16, marginTop: 6, alignItems: "baseline", flexWrap: "nowrap" }}>
+              <div style={{ flex: 1, display: "flex", alignItems: "baseline", gap: 4, whiteSpace: "nowrap" }}>
+                <strong>State :</strong>
+                <span style={{ flex: 1 }}>{inp(data.buyerState, (v) => update({ buyerState: v }))}</span>
               </div>
-              <div style={{ flex: 1 }}>
-                <strong>Code :</strong> {inp(data.buyerCode, (v) => update({ buyerCode: v }))}
+              <div style={{ flex: 1, display: "flex", alignItems: "baseline", gap: 4, whiteSpace: "nowrap" }}>
+                <strong>Code :</strong>
+                <span style={{ flex: 1 }}>{inp(data.buyerCode, (v) => update({ buyerCode: v }))}</span>
               </div>
             </div>
           </div>
