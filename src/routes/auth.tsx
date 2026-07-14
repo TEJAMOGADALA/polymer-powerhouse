@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import loginVideo from "@/assets/LoginPageMfc.mp4.asset.json";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-type Mode = "login" | "signup" | "forgot" | "otp" | "reset";
+type Mode = "login" | "forgot" | "otp" | "reset";
 
 const loginSchema = z.object({
   email: z.string().trim().email("Invalid email").max(255),
@@ -45,19 +46,6 @@ function AuthPage() {
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Signed in");
-    navigate({ to: "/" });
-  }
-
-  async function onSignup(values: z.infer<typeof loginSchema>) {
-    setBusy(true);
-    const { error } = await supabase.auth.signUp({
-      email: values.email,
-      password: values.password,
-      options: { emailRedirectTo: window.location.origin },
-    });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Account created. You're signed in.");
     navigate({ to: "/" });
   }
 
@@ -98,22 +86,39 @@ function AuthPage() {
   }
 
   return (
-    <div className="grid min-h-screen place-items-center px-4 py-10">
+    <div className="relative grid min-h-screen place-items-center overflow-hidden px-4 py-10">
+      {/* Background video with fallback gradient */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        className="absolute inset-0 -z-10 h-full w-full object-cover"
+        aria-hidden
+      >
+        <source src={loginVideo.url} type="video/mp4" />
+      </video>
+      <div
+        className="absolute inset-0 -z-10 bg-gradient-to-br from-slate-950/75 via-slate-900/70 to-blue-950/80"
+        aria-hidden
+      />
+
       <div className="w-full max-w-md">
         <div className="mb-6 flex items-center justify-center gap-3">
           <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg">
             <Factory className="h-5 w-5" />
           </div>
-          <div>
+          <div className="text-white drop-shadow">
             <h1 className="text-lg font-bold leading-tight">Polymer DMS</h1>
-            <p className="text-xs text-muted-foreground">Document Management</p>
+            <p className="text-xs opacity-80">Document Management</p>
           </div>
         </div>
 
-        <div className="glass rounded-2xl p-6 sm:p-8">
+        <div className="rounded-2xl border border-white/20 bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
           {mode === "login" && (
             <>
-              <h2 className="text-xl font-bold">Sign in</h2>
+              <h2 className="text-xl font-bold">Administrator sign in</h2>
               <p className="mt-1 text-sm text-muted-foreground">Access your polymer workspace</p>
               <form onSubmit={form.handleSubmit(onLogin)} className="mt-6 space-y-4">
                 <Field label="Email" icon={<Mail className="h-4 w-4" />}>
@@ -132,7 +137,7 @@ function AuthPage() {
                   {busy ? "Signing in..." : "Login"}
                 </Button>
               </form>
-              <div className="mt-4 flex justify-between text-sm">
+              <div className="mt-4 flex justify-center text-sm">
                 <button
                   type="button"
                   className="text-primary hover:underline"
@@ -144,31 +149,7 @@ function AuthPage() {
                 >
                   Forgot password?
                 </button>
-                <button type="button" className="text-primary hover:underline" onClick={() => setMode("signup")}>
-                  Create account
-                </button>
               </div>
-            </>
-          )}
-
-          {mode === "signup" && (
-            <>
-              <BackBtn onClick={() => setMode("login")} />
-              <h2 className="text-xl font-bold">Create admin account</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                First account becomes the admin.
-              </p>
-              <form onSubmit={form.handleSubmit(onSignup)} className="mt-6 space-y-4">
-                <Field label="Email" icon={<Mail className="h-4 w-4" />}>
-                  <Input type="email" {...form.register("email")} />
-                </Field>
-                <Field label="Password" icon={<Lock className="h-4 w-4" />}>
-                  <PasswordInput {...form.register("password")} />
-                </Field>
-                <Button type="submit" className="w-full" disabled={busy}>
-                  {busy ? "Creating..." : "Create account"}
-                </Button>
-              </form>
             </>
           )}
 
@@ -177,7 +158,7 @@ function AuthPage() {
               <BackBtn onClick={() => setMode("login")} />
               <h2 className="text-xl font-bold">Reset password</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                We'll email a 6-digit OTP to your registered address.
+                We'll email a 6-digit OTP to your registered administrator address.
               </p>
               <div className="mt-6 space-y-4">
                 <Field label="Registered email" icon={<Mail className="h-4 w-4" />}>
@@ -218,6 +199,10 @@ function AuthPage() {
 
           {mode === "reset" && <ResetPasswordForm busy={busy} onSubmit={resetPassword} />}
         </div>
+
+        <p className="mt-4 text-center text-xs text-white/80 drop-shadow">
+          Single-administrator access · New accounts must be provisioned by the admin.
+        </p>
       </div>
     </div>
   );
