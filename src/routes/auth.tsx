@@ -176,17 +176,20 @@ function AuthPage() {
             <>
               <BackBtn onClick={() => setMode("login")} />
               <h2 className="text-xl font-bold">Reset password</h2>
-              <p className="mt-1 text-sm text-muted-foreground">We'll email a 6-digit OTP.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                We'll email a 6-digit OTP to your registered address.
+              </p>
               <div className="mt-6 space-y-4">
                 <Field label="Registered email" icon={<Mail className="h-4 w-4" />}>
                   <Input
                     type="email"
                     value={recoveryEmail}
                     onChange={(e) => setRecoveryEmail(e.target.value)}
+                    placeholder="you@example.com"
                   />
                 </Field>
-                <Button className="w-full" disabled={busy} onClick={sendOtp}>
-                  {busy ? "Sending..." : "Send OTP"}
+                <Button className="w-full" disabled={busy || !recoveryEmail} onClick={sendOtp}>
+                  {busy ? "Sending..." : `Send OTP${recoveryEmail ? ` to ${recoveryEmail}` : ""}`}
                 </Button>
               </div>
             </>
