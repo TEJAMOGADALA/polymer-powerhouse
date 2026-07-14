@@ -29,6 +29,7 @@
   padding: 0;
   width: 100%;
   resize: none;
+  line-height: 1.35;
 }
 .doc-input:focus,
 .doc-textarea:focus {
@@ -44,12 +45,15 @@
   width: 100%;
   border-collapse: collapse;
   color: #0a1e5c;
+  table-layout: fixed;
 }
 .doc-table th,
 .doc-table td {
   border: 1.5px solid #0a1e5c;
   padding: 4px 6px;
   vertical-align: top;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 .doc-table th {
   font-weight: 700;
@@ -79,17 +83,15 @@
   pointer-events: none;
 }
 .doc-watermark span {
-  color: rgba(220, 38, 38, 0.28);
-  font-size: 140px;
-  font-weight: 900;
-  letter-spacing: 20px;
-  transform: rotate(-28deg);
-  border: 8px solid rgba(220, 38, 38, 0.28);
-  padding: 16px 40px;
-  border-radius: 12px;
+  color: rgba(220, 38, 38, 0.35);
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: 8px;
+  transform: rotate(-24deg);
+  border: 3px solid rgba(220, 38, 38, 0.35);
+  padding: 6px 22px;
+  border-radius: 6px;
 }
-
-/* Read-only rendering when a doc is saved / cancelled */
 .doc-readonly .doc-input,
 .doc-readonly .doc-textarea {
   pointer-events: none;
