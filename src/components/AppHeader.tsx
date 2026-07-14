@@ -34,10 +34,10 @@ export function AppHeader({ dashboardHref, title }: Props) {
         <div className="ml-auto flex items-center gap-2">
           {dashboardHref && (
             <Button asChild variant="outline" size="sm">
-              <Link to={dashboardHref}>
+              <a href={dashboardHref}>
                 <LayoutDashboard className="mr-1.5 h-4 w-4" />
                 Dashboard
-              </Link>
+              </a>
             </Button>
           )}
           <Button variant="ghost" size="sm" onClick={signOut}>
