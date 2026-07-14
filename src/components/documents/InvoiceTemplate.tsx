@@ -213,21 +213,21 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
           </div>
           <table className="doc-table" style={{ fontSize: 12 }}>
             <tbody>
-              {[
+              {([
                 ["SUB TOTAL", data.subTotal, (v: string) => update({ subTotal: v })],
                 ["CGST @ 9%", data.cgst, (v: string) => update({ cgst: v })],
                 ["SGST @ 9%", data.sgst, (v: string) => update({ sgst: v })],
                 ["IGST @ 18%", data.igst, (v: string) => update({ igst: v })],
                 ["GRAND TOTAL", data.grandTotal, (v: string) => update({ grandTotal: v })],
                 ["GST on Reverse Charge", data.gstReverse, (v: string) => update({ gstReverse: v })],
-              ].map(([label, val, on]) => (
-                <tr key={label as string}>
+              ] as Array<[string, string, (v: string) => void]>).map(([label, val, on]) => (
+                <tr key={label}>
                   <td style={{ fontWeight: 600 }}>{label}</td>
                   <td style={{ width: 100 }}>
                     <input
                       className="doc-input"
-                      value={val as string}
-                      onChange={(e) => (on as (v: string) => void)(e.target.value)}
+                      value={val}
+                      onChange={(e) => on(e.target.value)}
                       readOnly={readOnly}
                       style={{ textAlign: "right" }}
                     />
