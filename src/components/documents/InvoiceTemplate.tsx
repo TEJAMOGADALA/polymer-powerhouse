@@ -320,24 +320,25 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                       className="doc-input"
                       value={r.qty}
                       onChange={(e) => updateRow(i, "qty", e.target.value.replace(/[^\d.]/g, ""))}
-                      onBlur={(e) => {
-                        const v = e.target.value.trim();
-                        if (v && !v.endsWith("kg")) updateRow(i, "qty", v);
-                      }}
                       inputMode="decimal"
+                      data-doc-suffix=" kg"
                       style={{ textAlign: "center" }}
                     />
                   )}
                 </td>
-                <td>
-                  <input
-                    className="doc-input"
-                    value={r.rate}
-                    onChange={(e) => updateRow(i, "rate", e.target.value.replace(/[^\d.]/g, ""))}
-                    readOnly={readOnly}
-                    inputMode="decimal"
-                    style={{ textAlign: "center" }}
-                  />
+                <td style={{ textAlign: "center" }}>
+                  {readOnly ? (
+                    <span>{r.rate ? `₹${r.rate}` : ""}</span>
+                  ) : (
+                    <input
+                      className="doc-input"
+                      value={r.rate}
+                      onChange={(e) => updateRow(i, "rate", e.target.value.replace(/[^\d.]/g, ""))}
+                      inputMode="decimal"
+                      data-doc-prefix="₹"
+                      style={{ textAlign: "center" }}
+                    />
+                  )}
                 </td>
                 <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
                   {rowAmounts[i] > 0 ? `₹ ${fmt(rowAmounts[i])}` : ""}

@@ -6,10 +6,12 @@ import jsPDF from "jspdf";
  * Renders offscreen at fixed A4 pixel width (794px) so the captured
  * layout is identical regardless of the on-screen container size or
  * device pixel ratio.
+ *
+ * Inputs, selects and textareas are replaced with static text nodes that
+ * inherit the same computed styles so quantity `79 kg`, rate `₹50`, and
+ * multi-line Packing Details render identically to the on-screen preview.
  */
 export async function renderElementToPdf(el: HTMLElement): Promise<Blob> {
-  // Clone into a fixed-size offscreen host so nothing on-screen (zoom,
-  // focus, horizontal scroll wrapper) can influence the capture.
   const host = document.createElement("div");
   host.style.cssText =
     "position:fixed;left:-10000px;top:0;width:794px;background:#fff;z-index:-1;";
@@ -17,33 +19,58 @@ export async function renderElementToPdf(el: HTMLElement): Promise<Blob> {
   clone.style.width = "794px";
   clone.style.margin = "0";
   clone.style.transform = "none";
-  // Force readonly rendering: replace inputs/textarea with static text so
-  // caret/placeholder/focus styling never bleed into the PDF.
-  clone.querySelectorAll<HTMLInputElement>("input").forEach((i) => {
+
+  // Match the original element for computed style lookups
+  const originalInputs = Array.from(el.querySelectorAll<HTMLInputElement>("input"));
+  const cloneInputs = Array.from(clone.querySelectorAll<HTMLInputElement>("input"));
+  cloneInputs.forEach((i, idx) => {
+    const orig = originalInputs[idx];
+    const cs = orig ? window.getComputedStyle(orig) : window.getComputedStyle(i);
     const span = document.createElement("span");
-    span.textContent = i.value || "";
-    span.style.cssText = window.getComputedStyle(i).cssText;
+    const prefix = i.getAttribute("data-doc-prefix") ?? "";
+    const suffix = i.getAttribute("data-doc-suffix") ?? "";
+    span.textContent = i.value ? `${prefix}${i.value}${suffix}` : "";
+    span.style.cssText = cs.cssText;
     span.style.display = "inline-block";
     span.style.width = "100%";
     span.style.background = "transparent";
+    span.style.borderTop = "none";
+    span.style.borderLeft = "none";
+    span.style.borderRight = "none";
+    span.style.whiteSpace = "pre";
     i.replaceWith(span);
   });
-  clone.querySelectorAll<HTMLTextAreaElement>("textarea").forEach((t) => {
+
+  const originalTAs = Array.from(el.querySelectorAll<HTMLTextAreaElement>("textarea"));
+  const cloneTAs = Array.from(clone.querySelectorAll<HTMLTextAreaElement>("textarea"));
+  cloneTAs.forEach((t, idx) => {
+    const orig = originalTAs[idx];
+    const cs = orig ? window.getComputedStyle(orig) : window.getComputedStyle(t);
     const div = document.createElement("div");
     div.textContent = t.value || "";
-    div.style.cssText = window.getComputedStyle(t).cssText;
+    div.style.cssText = cs.cssText;
     div.style.whiteSpace = "pre-wrap";
     div.style.background = "transparent";
+    div.style.overflow = "visible";
+    div.style.height = "auto";
+    div.style.minHeight = cs.minHeight || "auto";
     t.replaceWith(div);
   });
-  clone.querySelectorAll<HTMLSelectElement>("select").forEach((s) => {
+
+  const originalSelects = Array.from(el.querySelectorAll<HTMLSelectElement>("select"));
+  const cloneSelects = Array.from(clone.querySelectorAll<HTMLSelectElement>("select"));
+  cloneSelects.forEach((s, idx) => {
+    const orig = originalSelects[idx];
+    const cs = orig ? window.getComputedStyle(orig) : window.getComputedStyle(s);
     const span = document.createElement("span");
     span.textContent = s.options[s.selectedIndex]?.text ?? "";
-    span.style.cssText = window.getComputedStyle(s).cssText;
+    span.style.cssText = cs.cssText;
     span.style.background = "transparent";
     span.style.appearance = "none";
+    span.style.border = "none";
     s.replaceWith(span);
   });
+
   host.appendChild(clone);
   document.body.appendChild(host);
 
@@ -60,7 +87,6 @@ export async function renderElementToPdf(el: HTMLElement): Promise<Blob> {
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
     const img = canvas.toDataURL("image/jpeg", 0.95);
-    // Preserve aspect: canvas is 794 * scale wide; A4 aspect is 794:1123.
     const imgHmm = (canvas.height * pageW) / canvas.width;
     pdf.addImage(img, "JPEG", 0, 0, pageW, Math.min(imgHmm, pageH));
     return pdf.output("blob");

@@ -21,7 +21,7 @@ export function AppHeader({ dashboardHref, title }: Props) {
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/60 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:px-6">
         <Link to="/" className="flex min-w-0 items-center gap-2">
           <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
@@ -34,10 +34,10 @@ export function AppHeader({ dashboardHref, title }: Props) {
         <div className="ml-auto flex items-center gap-2">
           {dashboardHref && (
             <Button asChild variant="outline" size="sm">
-              <a href={dashboardHref}>
+              <Link to={dashboardHref}>
                 <LayoutDashboard className="mr-1.5 h-4 w-4" />
                 Dashboard
-              </a>
+              </Link>
             </Button>
           )}
           <Button variant="ghost" size="sm" onClick={signOut}>
