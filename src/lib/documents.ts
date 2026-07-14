@@ -50,12 +50,10 @@ export async function saveNewDocument(args: {
   pdfBlob: Blob;
 }): Promise<DocumentRow> {
   const { profile, type, docNumber, customerName, payload, pdfBlob } = args;
-
   const { data: userData } = await supabase.auth.getUser();
   const uid = userData.user?.id;
   if (!uid) throw new Error("Not authenticated");
 
-  // pre-insert to reserve number (unique constraint)
   const { data: inserted, error: insErr } = await supabase
     .from("documents")
     .insert({
@@ -123,6 +121,20 @@ export async function cancelDocument(id: string, pdfBlob: Blob): Promise<void> {
   if (updErr) throw updErr;
 }
 
+export async function deleteDocument(id: string): Promise<void> {
+  const { data: doc, error } = await supabase
+    .from("documents")
+    .select("pdf_path")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  if (doc?.pdf_path) {
+    await supabase.storage.from("documents").remove([doc.pdf_path]);
+  }
+  const { error: delErr } = await supabase.from("documents").delete().eq("id", id);
+  if (delErr) throw delErr;
+}
+
 export async function listDocuments(slug: string, type: DocType): Promise<DocumentRow[]> {
   try { await supabase.rpc("auto_approve_documents" as never); } catch { /* noop */ }
   const { data, error } = await supabase
@@ -130,6 +142,17 @@ export async function listDocuments(slug: string, type: DocType): Promise<Docume
     .select("*")
     .eq("company_slug", slug)
     .eq("document_type", type)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as unknown as DocumentRow[];
+}
+
+export async function listAllDocuments(slug: string): Promise<DocumentRow[]> {
+  try { await supabase.rpc("auto_approve_documents" as never); } catch { /* noop */ }
+  const { data, error } = await supabase
+    .from("documents")
+    .select("*")
+    .eq("company_slug", slug)
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []) as unknown as DocumentRow[];

@@ -1,15 +1,25 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./DocumentPage.css";
 import { CompanyHeader } from "./CompanyHeader";
 import type { CompanyProfile } from "@/lib/company-profiles";
 
+export interface ChallanRow {
+  desc: string;
+  /** Multi-line raw packing input, e.g. "30x50\n20x25". */
+  packing: string;
+  /** Legacy: kept for older saved docs. Not used when packing is set. */
+  qty?: string;
+}
+
 export interface ChallanData {
   docNumber: string;
   date: string;
-  mAddress: string; // M/s multi-line
+  mAddress: string;
   gstin: string;
-  rows: { desc: string; qty: string }[];
+  rows: ChallanRow[];
 }
+
+const ROW_COUNT = 10;
 
 export function emptyChallanData(): ChallanData {
   return {
@@ -17,8 +27,21 @@ export function emptyChallanData(): ChallanData {
     date: new Date().toISOString().slice(0, 10),
     mAddress: "",
     gstin: "",
-    rows: Array.from({ length: 14 }, () => ({ desc: "", qty: "" })),
+    rows: Array.from({ length: ROW_COUNT }, () => ({ desc: "", packing: "", qty: "" })),
   };
+}
+
+/** Convert "30x50" → "30 x 50 kg"; passes through other text unchanged. */
+function normalizePackingLine(raw: string): string {
+  const m = raw.trim().match(/^(\d+(?:\.\d+)?)\s*[x×*]\s*(\d+(?:\.\d+)?)\s*(kg)?\s*$/i);
+  if (!m) return raw.trim();
+  return `${m[1]} x ${m[2]} kg`;
+}
+
+function computeLineQty(line: string): number | null {
+  const m = line.match(/^(\d+(?:\.\d+)?)\s*[x×*]\s*(\d+(?:\.\d+)?)/i);
+  if (!m) return null;
+  return parseFloat(m[1]) * parseFloat(m[2]);
 }
 
 interface Props {
@@ -36,18 +59,41 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
     setData(next);
     onChange?.(next);
   }
-  function updateRow(i: number, key: "desc" | "qty", v: string) {
+  function updateRow(i: number, key: keyof ChallanRow, v: string) {
     const rows = data.rows.slice();
     rows[i] = { ...rows[i], [key]: v };
     update({ ...data, rows });
   }
+  function normalizeRowOnBlur(i: number) {
+    const raw = data.rows[i].packing ?? "";
+    const norm = raw
+      .split("\n")
+      .map((l) => (l.trim() ? normalizePackingLine(l) : ""))
+      .join("\n");
+    if (norm !== raw) updateRow(i, "packing", norm);
+  }
+
+  const perRow = useMemo(
+    () =>
+      data.rows.map((r) => {
+        const lines = (r.packing || "").split("\n");
+        const qtyLines = lines.map((l) => (l.trim() ? computeLineQty(l) : null));
+        const total = qtyLines.reduce<number>(
+          (a, v) => a + (typeof v === "number" ? v : 0),
+          0,
+        );
+        return { lines, qtyLines, total };
+      }),
+    [data.rows],
+  );
+
+  const grandTotal = perRow.reduce((a, r) => a + r.total, 0);
 
   return (
     <div id="doc-print" className={`doc-page ${readOnly ? "doc-readonly" : ""}`}>
       <div className="doc-frame">
         <CompanyHeader profile={profile} />
 
-        {/* Meta block: M/s + Delivery Challan badge */}
         <div
           style={{
             display: "grid",
@@ -90,8 +136,12 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
               <input
                 className="doc-input"
                 value={data.docNumber}
-                onChange={(e) => update({ ...data, docNumber: e.target.value })}
+                onChange={(e) =>
+                  update({ ...data, docNumber: e.target.value.replace(/\D+/g, "") })
+                }
                 readOnly={readOnly}
+                inputMode="numeric"
+                pattern="\d*"
                 style={{
                   borderBottom: "1px dotted #0a1e5c",
                   fontWeight: 700,
@@ -116,40 +166,91 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
 
         {/* Line items */}
         <table className="doc-table" style={{ fontSize: 13 }}>
+          <colgroup>
+            <col style={{ width: 42 }} />
+            <col />
+            <col style={{ width: 150 }} />
+            <col style={{ width: 110 }} />
+          </colgroup>
           <thead>
             <tr>
-              <th style={{ width: 60 }}>Sl.No.</th>
+              <th>Sl.No.</th>
               <th>DESCRIPTION</th>
-              <th style={{ width: 140 }}>QUANTITY</th>
+              <th>PACKING DETAILS</th>
+              <th>QUANTITY</th>
             </tr>
           </thead>
           <tbody>
-            {data.rows.map((r, i) => (
-              <tr key={i}>
-                <td style={{ textAlign: "center", height: 34 }}>{i + 1}</td>
-                <td>
-                  <input
-                    className="doc-input"
-                    value={r.desc}
-                    onChange={(e) => updateRow(i, "desc", e.target.value)}
-                    readOnly={readOnly}
-                  />
-                </td>
-                <td>
-                  <input
-                    className="doc-input"
-                    value={r.qty}
-                    onChange={(e) => updateRow(i, "qty", e.target.value)}
-                    readOnly={readOnly}
-                    style={{ textAlign: "center" }}
-                  />
-                </td>
-              </tr>
-            ))}
+            {data.rows.map((r, i) => {
+              const info = perRow[i];
+              return (
+                <tr key={i}>
+                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>{i + 1}</td>
+                  <td>
+                    <input
+                      className="doc-input"
+                      value={r.desc}
+                      onChange={(e) => updateRow(i, "desc", e.target.value)}
+                      readOnly={readOnly}
+                    />
+                  </td>
+                  <td style={{ padding: 2 }}>
+                    <textarea
+                      className="doc-textarea"
+                      rows={Math.max(2, info.lines.length)}
+                      value={r.packing}
+                      onChange={(e) => updateRow(i, "packing", e.target.value)}
+                      onBlur={() => normalizeRowOnBlur(i)}
+                      readOnly={readOnly}
+                      style={{ minHeight: 32 }}
+                      placeholder="e.g. 30x50"
+                    />
+                  </td>
+                  <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
+                    {info.qtyLines.some((v) => v !== null) ? (
+                      <>
+                        {info.qtyLines.map((v, k) => (
+                          <div key={k} style={{ minHeight: 18 }}>
+                            {v !== null ? `${v} kg` : "\u00a0"}
+                          </div>
+                        ))}
+                        {info.qtyLines.filter((v) => v !== null).length > 1 && (
+                          <div
+                            style={{
+                              borderTop: "1px solid #0a1e5c",
+                              marginTop: 2,
+                              paddingTop: 2,
+                              fontWeight: 700,
+                            }}
+                          >
+                            {info.total} kg
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <input
+                        className="doc-input"
+                        value={r.qty ?? ""}
+                        onChange={(e) => updateRow(i, "qty", e.target.value)}
+                        readOnly={readOnly}
+                        style={{ textAlign: "right" }}
+                      />
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+            <tr>
+              <td colSpan={3} style={{ textAlign: "right", fontWeight: 700 }}>
+                GRAND TOTAL
+              </td>
+              <td style={{ textAlign: "right", fontWeight: 700 }}>
+                {grandTotal > 0 ? `${grandTotal} kg` : ""}
+              </td>
+            </tr>
           </tbody>
         </table>
 
-        {/* Footer */}
         <div style={{ marginTop: "auto", fontSize: 12 }}>
           <div style={{ textAlign: "right", marginTop: 12, fontWeight: 700 }}>
             For {profile.name}

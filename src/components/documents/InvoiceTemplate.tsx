@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./DocumentPage.css";
 import { CompanyHeader } from "./CompanyHeader";
 import type { CompanyProfile } from "@/lib/company-profiles";
@@ -8,9 +8,9 @@ export interface InvoiceRow {
   hsn: string;
   qty: string;
   rate: string;
-  amount: string; // rupees
-  ps: string; // paise
 }
+
+export type TaxRate = "0" | "2.5" | "5" | "9" | "18";
 
 export interface InvoiceData {
   docNumber: string;
@@ -28,13 +28,13 @@ export interface InvoiceData {
   vehicleNo: string;
   rows: InvoiceRow[];
   amountInWords: string;
-  subTotal: string;
-  cgst: string;
-  sgst: string;
-  igst: string;
-  grandTotal: string;
+  cgstRate: TaxRate;
+  sgstRate: TaxRate;
+  igstRate: TaxRate;
   gstReverse: string;
 }
+
+const ROW_COUNT = 10;
 
 export function emptyInvoiceData(): InvoiceData {
   return {
@@ -51,18 +51,19 @@ export function emptyInvoiceData(): InvoiceData {
     modeOfTransport: "",
     placeOfSupply: "",
     vehicleNo: "",
-    rows: Array.from({ length: 12 }, () => ({
-      desc: "", hsn: "", qty: "", rate: "", amount: "", ps: "",
+    rows: Array.from({ length: ROW_COUNT }, () => ({
+      desc: "", hsn: "", qty: "", rate: "",
     })),
     amountInWords: "",
-    subTotal: "",
-    cgst: "",
-    sgst: "",
-    igst: "",
-    grandTotal: "",
+    cgstRate: "9",
+    sgstRate: "9",
+    igstRate: "0",
     gstReverse: "",
   };
 }
+
+const fmt = (n: number) =>
+  n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 interface Props {
   profile: CompanyProfile;
@@ -76,7 +77,14 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
   const [data, setData] = useState<InvoiceData>(value);
   useEffect(() => setData(value), [value]);
   const update = (patch: Partial<InvoiceData>) => {
-    const next = { ...data, ...patch };
+    let next = { ...data, ...patch };
+    // Mutual exclusion: IGST vs CGST+SGST
+    if (patch.igstRate && patch.igstRate !== "0") {
+      next = { ...next, cgstRate: "0", sgstRate: "0" };
+    }
+    if ((patch.cgstRate && patch.cgstRate !== "0") || (patch.sgstRate && patch.sgstRate !== "0")) {
+      next = { ...next, igstRate: "0" };
+    }
     setData(next);
     onChange?.(next);
   };
@@ -96,6 +104,47 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
     />
   );
 
+  const rowAmounts = useMemo(
+    () =>
+      data.rows.map((r) => {
+        const q = parseFloat(r.qty);
+        const rt = parseFloat(r.rate);
+        if (isNaN(q) || isNaN(rt)) return 0;
+        return q * rt;
+      }),
+    [data.rows],
+  );
+  const subTotal = rowAmounts.reduce((a, b) => a + b, 0);
+  const cgstAmt = (subTotal * parseFloat(data.cgstRate || "0")) / 100;
+  const sgstAmt = (subTotal * parseFloat(data.sgstRate || "0")) / 100;
+  const igstAmt = (subTotal * parseFloat(data.igstRate || "0")) / 100;
+  const grandTotal = subTotal + cgstAmt + sgstAmt + igstAmt;
+
+  const rateOpts: TaxRate[] = ["0", "2.5", "5", "9"];
+  const igstOpts: TaxRate[] = ["0", "2.5", "5", "18"];
+  const rateLabel = (r: TaxRate) => (r === "0" ? "NONE" : `${r}%`);
+
+  const TaxSelect = ({
+    value: v, onChange: oc, options,
+  }: { value: TaxRate; onChange: (v: TaxRate) => void; options: TaxRate[] }) => (
+    <select
+      value={v}
+      onChange={(e) => oc(e.target.value as TaxRate)}
+      disabled={readOnly}
+      style={{
+        background: "transparent",
+        border: "1px dotted #0a1e5c",
+        font: "inherit",
+        color: "inherit",
+        padding: "0 2px",
+      }}
+    >
+      {options.map((o) => (
+        <option key={o} value={o}>{rateLabel(o)}</option>
+      ))}
+    </select>
+  );
+
   return (
     <div id="doc-print" className={`doc-page ${readOnly ? "doc-readonly" : ""}`}>
       <div className="doc-frame" style={{ padding: "8px 10px" }}>
@@ -106,15 +155,9 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
           rightMeta={
             <div
               style={{
-                position: "absolute",
-                right: 30,
-                top: 60,
-                fontSize: 12,
-                display: "flex",
-                flexDirection: "column",
-                gap: 4,
-                background: "#fff",
-                padding: "2px 6px",
+                position: "absolute", right: 30, top: 60, fontSize: 12,
+                display: "flex", flexDirection: "column", gap: 4,
+                background: "#fff", padding: "2px 6px",
               }}
             >
               <div style={{ display: "flex", gap: 4 }}>
@@ -122,8 +165,10 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                 <input
                   className="doc-input"
                   value={data.docNumber}
-                  onChange={(e) => update({ docNumber: e.target.value })}
+                  onChange={(e) => update({ docNumber: e.target.value.replace(/\D+/g, "") })}
                   readOnly={readOnly}
+                  inputMode="numeric"
+                  pattern="\d*"
                   style={{ borderBottom: "1px dotted #0a1e5c", width: 70, color: "#b91c1c", fontWeight: 700 }}
                 />
               </div>
@@ -142,19 +187,26 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
           }
         />
 
-        <div
-          className="doc-title"
-          style={{ fontSize: 15, padding: "3px 0", borderBottom: "2px solid #0a1e5c" }}
-        >
+        <div className="doc-title" style={{ fontSize: 15, padding: "3px 0", borderBottom: "2px solid #0a1e5c" }}>
           TAX INVOICE
         </div>
 
-        {/* Buyer / Supply meta */}
+        {/* Buyer / Supply meta — bigger buyer name area */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: "2px solid #0a1e5c", fontSize: 12 }}>
           <div style={{ padding: "6px 8px", borderRight: "1.5px solid #0a1e5c" }}>
-            <div><strong>Buyer`s Name : </strong>{inp(data.buyerName, (v) => update({ buyerName: v }), { width: "70%" })}</div>
-            <div style={{ marginTop: 20 }}><strong>GSTIN :</strong> {inp(data.buyerGstin, (v) => update({ buyerGstin: v }), { width: "70%" })}</div>
-            <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
+            <div style={{ display: "flex", gap: 4, alignItems: "start" }}>
+              <strong style={{ whiteSpace: "nowrap" }}>Buyer`s Name :</strong>
+              <textarea
+                className="doc-textarea"
+                rows={3}
+                value={data.buyerName}
+                onChange={(e) => update({ buyerName: e.target.value })}
+                readOnly={readOnly}
+                style={{ borderBottom: "1px dotted #0a1e5c", minHeight: 60, width: "100%" }}
+              />
+            </div>
+            <div style={{ marginTop: 8 }}><strong>GSTIN :</strong> {inp(data.buyerGstin, (v) => update({ buyerGstin: v }), { width: "70%" })}</div>
+            <div style={{ display: "flex", gap: 16, marginTop: 6 }}>
               <div style={{ flex: 1 }}><strong>State :</strong> {inp(data.buyerState, (v) => update({ buyerState: v }))}</div>
               <div style={{ flex: 1 }}><strong>Code :</strong> {inp(data.buyerCode, (v) => update({ buyerCode: v }))}</div>
             </div>
@@ -172,70 +224,114 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
 
         {/* Items table */}
         <table className="doc-table" style={{ fontSize: 12 }}>
+          <colgroup>
+            <col style={{ width: 36 }} />
+            <col />
+            <col style={{ width: 90 }} />
+            <col style={{ width: 100 }} />
+            <col style={{ width: 90 }} />
+            <col style={{ width: 110 }} />
+          </colgroup>
           <thead>
             <tr>
-              <th style={{ width: 40 }}>S.No.</th>
+              <th>S.No.</th>
               <th>DESCRIPTION OF GOODS</th>
-              <th style={{ width: 70 }}>HSN Code</th>
-              <th style={{ width: 80 }}>QUANTITY (KG)</th>
-              <th style={{ width: 70 }}>RATE/KG</th>
-              <th style={{ width: 80 }}>AMOUNT(R)</th>
-              <th style={{ width: 40 }}>PS</th>
+              <th>HSN Code</th>
+              <th>QUANTITY (KG)</th>
+              <th>RATE/KG</th>
+              <th>AMOUNT (Rs)</th>
             </tr>
           </thead>
           <tbody>
             {data.rows.map((r, i) => (
-              <tr key={i} style={{ height: 30 }}>
+              <tr key={i} style={{ height: 28 }}>
                 <td style={{ textAlign: "center" }}>{i + 1}</td>
-                <td><input className="doc-input" value={r.desc} onChange={(e) => updateRow(i, "desc", e.target.value)} readOnly={readOnly} /></td>
-                <td><input className="doc-input" value={r.hsn} onChange={(e) => updateRow(i, "hsn", e.target.value)} readOnly={readOnly} style={{ textAlign: "center" }} /></td>
-                <td><input className="doc-input" value={r.qty} onChange={(e) => updateRow(i, "qty", e.target.value)} readOnly={readOnly} style={{ textAlign: "right" }} /></td>
-                <td><input className="doc-input" value={r.rate} onChange={(e) => updateRow(i, "rate", e.target.value)} readOnly={readOnly} style={{ textAlign: "right" }} /></td>
-                <td><input className="doc-input" value={r.amount} onChange={(e) => updateRow(i, "amount", e.target.value)} readOnly={readOnly} style={{ textAlign: "right" }} /></td>
-                <td><input className="doc-input" value={r.ps} onChange={(e) => updateRow(i, "ps", e.target.value)} readOnly={readOnly} style={{ textAlign: "right" }} /></td>
+                <td>
+                  <input className="doc-input" value={r.desc}
+                    onChange={(e) => updateRow(i, "desc", e.target.value)} readOnly={readOnly} />
+                </td>
+                <td>
+                  <input className="doc-input" value={r.hsn}
+                    onChange={(e) => updateRow(i, "hsn", e.target.value)} readOnly={readOnly}
+                    style={{ textAlign: "center" }} />
+                </td>
+                <td style={{ textAlign: "center" }}>
+                  {readOnly ? (
+                    <span>{r.qty ? `${r.qty} kg` : ""}</span>
+                  ) : (
+                    <input
+                      className="doc-input"
+                      value={r.qty}
+                      onChange={(e) => updateRow(i, "qty", e.target.value.replace(/[^\d.]/g, ""))}
+                      onBlur={(e) => {
+                        const v = e.target.value.trim();
+                        if (v && !v.endsWith("kg")) updateRow(i, "qty", v);
+                      }}
+                      inputMode="decimal"
+                      style={{ textAlign: "center" }}
+                      placeholder="e.g. 50"
+                    />
+                  )}
+                </td>
+                <td>
+                  <input className="doc-input" value={r.rate}
+                    onChange={(e) => updateRow(i, "rate", e.target.value.replace(/[^\d.]/g, ""))}
+                    readOnly={readOnly} inputMode="decimal" style={{ textAlign: "center" }} />
+                </td>
+                <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
+                  {rowAmounts[i] > 0 ? `₹ ${fmt(rowAmounts[i])}` : ""}
+                </td>
               </tr>
             ))}
+
+            {/* Totals block — labels aligned under RATE/KG, values under AMOUNT */}
+            {[
+              ["SUB TOTAL", subTotal, null] as const,
+              [`CGST @ ${data.cgstRate}%`, cgstAmt, "cgst"] as const,
+              [`SGST @ ${data.sgstRate}%`, sgstAmt, "sgst"] as const,
+              [`IGST @ ${data.igstRate}%`, igstAmt, "igst"] as const,
+            ].map(([label, val, kind]) => (
+              <tr key={label}>
+                <td colSpan={4} style={{ border: "none" }} />
+                <td style={{ fontWeight: 700, textAlign: "right", padding: "3px 6px" }}>
+                  {kind === "cgst" ? (
+                    <>CGST @ <TaxSelect value={data.cgstRate} onChange={(v) => update({ cgstRate: v })} options={rateOpts} /></>
+                  ) : kind === "sgst" ? (
+                    <>SGST @ <TaxSelect value={data.sgstRate} onChange={(v) => update({ sgstRate: v })} options={rateOpts} /></>
+                  ) : kind === "igst" ? (
+                    <>IGST @ <TaxSelect value={data.igstRate} onChange={(v) => update({ igstRate: v })} options={igstOpts} /></>
+                  ) : label}
+                </td>
+                <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums", fontWeight: kind ? 500 : 700 }}>
+                  {val > 0 ? `₹ ${fmt(val)}` : "—"}
+                </td>
+              </tr>
+            ))}
+            <tr>
+              <td colSpan={4} style={{ border: "none" }} />
+              <td style={{ fontWeight: 800, textAlign: "right", background: "#f4f8ff" }}>GRAND TOTAL</td>
+              <td style={{ fontWeight: 800, textAlign: "right", background: "#f4f8ff", fontVariantNumeric: "tabular-nums" }}>
+                ₹ {fmt(grandTotal)}
+              </td>
+            </tr>
+            <tr>
+              <td colSpan={4} style={{ border: "none" }} />
+              <td style={{ padding: "3px 6px", textAlign: "right" }}>GST on Reverse Charge</td>
+              <td>
+                <input className="doc-input" value={data.gstReverse}
+                  onChange={(e) => update({ gstReverse: e.target.value })}
+                  readOnly={readOnly} style={{ textAlign: "right" }} />
+              </td>
+            </tr>
           </tbody>
         </table>
 
-        {/* Totals + words */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 260px", fontSize: 12, borderTop: "0" }}>
-          <div style={{ borderRight: "1.5px solid #0a1e5c", borderBottom: "1.5px solid #0a1e5c", padding: 6 }}>
-            <div><strong>TOTAL AMOUNT( in words) :</strong></div>
-            <textarea
-              className="doc-textarea"
-              rows={3}
-              value={data.amountInWords}
-              onChange={(e) => update({ amountInWords: e.target.value })}
-              readOnly={readOnly}
-              style={{ marginTop: 4 }}
-            />
-          </div>
-          <table className="doc-table" style={{ fontSize: 12 }}>
-            <tbody>
-              {([
-                ["SUB TOTAL", data.subTotal, (v: string) => update({ subTotal: v })],
-                ["CGST @ 9%", data.cgst, (v: string) => update({ cgst: v })],
-                ["SGST @ 9%", data.sgst, (v: string) => update({ sgst: v })],
-                ["IGST @ 18%", data.igst, (v: string) => update({ igst: v })],
-                ["GRAND TOTAL", data.grandTotal, (v: string) => update({ grandTotal: v })],
-                ["GST on Reverse Charge", data.gstReverse, (v: string) => update({ gstReverse: v })],
-              ] as Array<[string, string, (v: string) => void]>).map(([label, val, on]) => (
-                <tr key={label}>
-                  <td style={{ fontWeight: 600 }}>{label}</td>
-                  <td style={{ width: 100 }}>
-                    <input
-                      className="doc-input"
-                      value={val}
-                      onChange={(e) => on(e.target.value)}
-                      readOnly={readOnly}
-                      style={{ textAlign: "right" }}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* Words */}
+        <div style={{ fontSize: 12, padding: "6px 8px", borderBottom: "1.5px solid #0a1e5c" }}>
+          <div><strong>TOTAL AMOUNT (in words) :</strong></div>
+          <textarea className="doc-textarea" rows={2} value={data.amountInWords}
+            onChange={(e) => update({ amountInWords: e.target.value })}
+            readOnly={readOnly} style={{ marginTop: 4 }} />
         </div>
 
         {/* Bank + declaration */}
