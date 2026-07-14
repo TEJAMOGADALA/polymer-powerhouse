@@ -155,7 +155,7 @@ function AuthPage() {
                   <Input type="email" {...form.register("email")} />
                 </Field>
                 <Field label="Password" icon={<Lock className="h-4 w-4" />}>
-                  <Input type="password" {...form.register("password")} />
+                  <PasswordInput {...form.register("password")} />
                 </Field>
                 <Button type="submit" className="w-full" disabled={busy}>
                   {busy ? "Creating..." : "Create account"}
