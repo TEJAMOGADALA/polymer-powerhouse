@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedCompanySlugRouteImport } from './routes/_authenticated/company.$slug'
+import { Route as AuthenticatedCompanySlugIndexRouteImport } from './routes/_authenticated/company.$slug.index'
 import { Route as AuthenticatedCompanySlugDashboardRouteImport } from './routes/_authenticated/company.$slug.dashboard'
 import { Route as AuthenticatedCompanySlugInvoiceNewRouteImport } from './routes/_authenticated/company.$slug.invoice.new'
 import { Route as AuthenticatedCompanySlugDocumentIdRouteImport } from './routes/_authenticated/company.$slug.document.$id'
@@ -37,6 +38,12 @@ const AuthenticatedCompanySlugRoute =
     id: '/company/$slug',
     path: '/company/$slug',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCompanySlugIndexRoute =
+  AuthenticatedCompanySlugIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCompanySlugRoute,
   } as any)
 const AuthenticatedCompanySlugDashboardRoute =
   AuthenticatedCompanySlugDashboardRouteImport.update({
@@ -68,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/company/$slug': typeof AuthenticatedCompanySlugRouteWithChildren
   '/company/$slug/dashboard': typeof AuthenticatedCompanySlugDashboardRoute
+  '/company/$slug/': typeof AuthenticatedCompanySlugIndexRoute
   '/company/$slug/challan/new': typeof AuthenticatedCompanySlugChallanNewRoute
   '/company/$slug/document/$id': typeof AuthenticatedCompanySlugDocumentIdRoute
   '/company/$slug/invoice/new': typeof AuthenticatedCompanySlugInvoiceNewRoute
@@ -75,8 +83,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/': typeof AuthenticatedIndexRoute
-  '/company/$slug': typeof AuthenticatedCompanySlugRouteWithChildren
   '/company/$slug/dashboard': typeof AuthenticatedCompanySlugDashboardRoute
+  '/company/$slug': typeof AuthenticatedCompanySlugIndexRoute
   '/company/$slug/challan/new': typeof AuthenticatedCompanySlugChallanNewRoute
   '/company/$slug/document/$id': typeof AuthenticatedCompanySlugDocumentIdRoute
   '/company/$slug/invoice/new': typeof AuthenticatedCompanySlugInvoiceNewRoute
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/company/$slug': typeof AuthenticatedCompanySlugRouteWithChildren
   '/_authenticated/company/$slug/dashboard': typeof AuthenticatedCompanySlugDashboardRoute
+  '/_authenticated/company/$slug/': typeof AuthenticatedCompanySlugIndexRoute
   '/_authenticated/company/$slug/challan/new': typeof AuthenticatedCompanySlugChallanNewRoute
   '/_authenticated/company/$slug/document/$id': typeof AuthenticatedCompanySlugDocumentIdRoute
   '/_authenticated/company/$slug/invoice/new': typeof AuthenticatedCompanySlugInvoiceNewRoute
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/company/$slug'
     | '/company/$slug/dashboard'
+    | '/company/$slug/'
     | '/company/$slug/challan/new'
     | '/company/$slug/document/$id'
     | '/company/$slug/invoice/new'
@@ -106,8 +116,8 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/'
-    | '/company/$slug'
     | '/company/$slug/dashboard'
+    | '/company/$slug'
     | '/company/$slug/challan/new'
     | '/company/$slug/document/$id'
     | '/company/$slug/invoice/new'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/company/$slug'
     | '/_authenticated/company/$slug/dashboard'
+    | '/_authenticated/company/$slug/'
     | '/_authenticated/company/$slug/challan/new'
     | '/_authenticated/company/$slug/document/$id'
     | '/_authenticated/company/$slug/invoice/new'
@@ -158,6 +169,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompanySlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/company/$slug/': {
+      id: '/_authenticated/company/$slug/'
+      path: '/'
+      fullPath: '/company/$slug/'
+      preLoaderRoute: typeof AuthenticatedCompanySlugIndexRouteImport
+      parentRoute: typeof AuthenticatedCompanySlugRoute
+    }
     '/_authenticated/company/$slug/dashboard': {
       id: '/_authenticated/company/$slug/dashboard'
       path: '/dashboard'
@@ -191,6 +209,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedCompanySlugRouteChildren {
   AuthenticatedCompanySlugDashboardRoute: typeof AuthenticatedCompanySlugDashboardRoute
+  AuthenticatedCompanySlugIndexRoute: typeof AuthenticatedCompanySlugIndexRoute
   AuthenticatedCompanySlugChallanNewRoute: typeof AuthenticatedCompanySlugChallanNewRoute
   AuthenticatedCompanySlugDocumentIdRoute: typeof AuthenticatedCompanySlugDocumentIdRoute
   AuthenticatedCompanySlugInvoiceNewRoute: typeof AuthenticatedCompanySlugInvoiceNewRoute
@@ -200,6 +219,7 @@ const AuthenticatedCompanySlugRouteChildren: AuthenticatedCompanySlugRouteChildr
   {
     AuthenticatedCompanySlugDashboardRoute:
       AuthenticatedCompanySlugDashboardRoute,
+    AuthenticatedCompanySlugIndexRoute: AuthenticatedCompanySlugIndexRoute,
     AuthenticatedCompanySlugChallanNewRoute:
       AuthenticatedCompanySlugChallanNewRoute,
     AuthenticatedCompanySlugDocumentIdRoute:
@@ -233,13 +253,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
