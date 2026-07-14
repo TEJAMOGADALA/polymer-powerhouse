@@ -136,7 +136,7 @@ export async function listDocuments(slug: string, type: DocType): Promise<Docume
 }
 
 export async function getDocument(id: string): Promise<DocumentRow> {
-  await supabase.rpc("auto_approve_documents").catch(() => {});
+  try { await supabase.rpc("auto_approve_documents" as never); } catch { /* noop */ }
   const { data, error } = await supabase.from("documents").select("*").eq("id", id).single();
   if (error) throw error;
   return data as unknown as DocumentRow;
