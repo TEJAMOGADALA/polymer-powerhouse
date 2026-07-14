@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Factory, Mail, Lock, KeyRound, ArrowLeft } from "lucide-react";
+import { Factory, Mail, Lock, KeyRound, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,7 +123,7 @@ function AuthPage() {
                   <p className="text-xs text-destructive">{form.formState.errors.email.message}</p>
                 )}
                 <Field label="Password" icon={<Lock className="h-4 w-4" />}>
-                  <Input type="password" autoComplete="current-password" {...form.register("password")} />
+                  <PasswordInput autoComplete="current-password" {...form.register("password")} />
                 </Field>
                 {form.formState.errors.password && (
                   <p className="text-xs text-destructive">{form.formState.errors.password.message}</p>
@@ -155,7 +155,7 @@ function AuthPage() {
                   <Input type="email" {...form.register("email")} />
                 </Field>
                 <Field label="Password" icon={<Lock className="h-4 w-4" />}>
-                  <Input type="password" {...form.register("password")} />
+                  <PasswordInput {...form.register("password")} />
                 </Field>
                 <Button type="submit" className="w-full" disabled={busy}>
                   {busy ? "Creating..." : "Create account"}
@@ -232,6 +232,27 @@ function Field({ label, icon, children }: { label: string; icon: React.ReactNode
   );
 }
 
+const PasswordInput = React.forwardRef<HTMLInputElement, React.ComponentProps<typeof Input>>(
+  (props, ref) => {
+    const [show, setShow] = useState(false);
+    return (
+      <div className="relative">
+        <Input ref={ref} type={show ? "text" : "password"} {...props} className="pr-10" />
+        <button
+          type="button"
+          tabIndex={-1}
+          onClick={() => setShow((s) => !s)}
+          aria-label={show ? "Hide password" : "Show password"}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+        >
+          {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+      </div>
+    );
+  }
+);
+PasswordInput.displayName = "PasswordInput";
+
 function ResetPasswordForm({ busy, onSubmit }: { busy: boolean; onSubmit: (p: string) => void }) {
   const [pass, setPass] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -240,10 +261,10 @@ function ResetPasswordForm({ busy, onSubmit }: { busy: boolean; onSubmit: (p: st
       <h2 className="text-xl font-bold">Set new password</h2>
       <div className="mt-6 space-y-4">
         <Field label="New password" icon={<KeyRound className="h-4 w-4" />}>
-          <Input type="password" value={pass} onChange={(e) => setPass(e.target.value)} />
+          <PasswordInput value={pass} onChange={(e) => setPass(e.target.value)} />
         </Field>
         <Field label="Confirm password" icon={<KeyRound className="h-4 w-4" />}>
-          <Input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+          <PasswordInput value={confirm} onChange={(e) => setConfirm(e.target.value)} />
         </Field>
         <Button
           className="w-full"
