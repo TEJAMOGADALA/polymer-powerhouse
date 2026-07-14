@@ -13,6 +13,10 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedCompanySlugRouteImport } from './routes/_authenticated/company.$slug'
+import { Route as AuthenticatedCompanySlugDashboardRouteImport } from './routes/_authenticated/company.$slug.dashboard'
+import { Route as AuthenticatedCompanySlugInvoiceNewRouteImport } from './routes/_authenticated/company.$slug.invoice.new'
+import { Route as AuthenticatedCompanySlugDocumentIdRouteImport } from './routes/_authenticated/company.$slug.document.$id'
+import { Route as AuthenticatedCompanySlugChallanNewRouteImport } from './routes/_authenticated/company.$slug.challan.new'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -34,35 +38,89 @@ const AuthenticatedCompanySlugRoute =
     path: '/company/$slug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCompanySlugDashboardRoute =
+  AuthenticatedCompanySlugDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedCompanySlugRoute,
+  } as any)
+const AuthenticatedCompanySlugInvoiceNewRoute =
+  AuthenticatedCompanySlugInvoiceNewRouteImport.update({
+    id: '/invoice/new',
+    path: '/invoice/new',
+    getParentRoute: () => AuthenticatedCompanySlugRoute,
+  } as any)
+const AuthenticatedCompanySlugDocumentIdRoute =
+  AuthenticatedCompanySlugDocumentIdRouteImport.update({
+    id: '/document/$id',
+    path: '/document/$id',
+    getParentRoute: () => AuthenticatedCompanySlugRoute,
+  } as any)
+const AuthenticatedCompanySlugChallanNewRoute =
+  AuthenticatedCompanySlugChallanNewRouteImport.update({
+    id: '/challan/new',
+    path: '/challan/new',
+    getParentRoute: () => AuthenticatedCompanySlugRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
-  '/company/$slug': typeof AuthenticatedCompanySlugRoute
+  '/company/$slug': typeof AuthenticatedCompanySlugRouteWithChildren
+  '/company/$slug/dashboard': typeof AuthenticatedCompanySlugDashboardRoute
+  '/company/$slug/challan/new': typeof AuthenticatedCompanySlugChallanNewRoute
+  '/company/$slug/document/$id': typeof AuthenticatedCompanySlugDocumentIdRoute
+  '/company/$slug/invoice/new': typeof AuthenticatedCompanySlugInvoiceNewRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/': typeof AuthenticatedIndexRoute
-  '/company/$slug': typeof AuthenticatedCompanySlugRoute
+  '/company/$slug': typeof AuthenticatedCompanySlugRouteWithChildren
+  '/company/$slug/dashboard': typeof AuthenticatedCompanySlugDashboardRoute
+  '/company/$slug/challan/new': typeof AuthenticatedCompanySlugChallanNewRoute
+  '/company/$slug/document/$id': typeof AuthenticatedCompanySlugDocumentIdRoute
+  '/company/$slug/invoice/new': typeof AuthenticatedCompanySlugInvoiceNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/company/$slug': typeof AuthenticatedCompanySlugRoute
+  '/_authenticated/company/$slug': typeof AuthenticatedCompanySlugRouteWithChildren
+  '/_authenticated/company/$slug/dashboard': typeof AuthenticatedCompanySlugDashboardRoute
+  '/_authenticated/company/$slug/challan/new': typeof AuthenticatedCompanySlugChallanNewRoute
+  '/_authenticated/company/$slug/document/$id': typeof AuthenticatedCompanySlugDocumentIdRoute
+  '/_authenticated/company/$slug/invoice/new': typeof AuthenticatedCompanySlugInvoiceNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/company/$slug'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/company/$slug'
+    | '/company/$slug/dashboard'
+    | '/company/$slug/challan/new'
+    | '/company/$slug/document/$id'
+    | '/company/$slug/invoice/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/' | '/company/$slug'
+  to:
+    | '/auth'
+    | '/'
+    | '/company/$slug'
+    | '/company/$slug/dashboard'
+    | '/company/$slug/challan/new'
+    | '/company/$slug/document/$id'
+    | '/company/$slug/invoice/new'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/'
     | '/_authenticated/company/$slug'
+    | '/_authenticated/company/$slug/dashboard'
+    | '/_authenticated/company/$slug/challan/new'
+    | '/_authenticated/company/$slug/document/$id'
+    | '/_authenticated/company/$slug/invoice/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -100,17 +158,69 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompanySlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/company/$slug/dashboard': {
+      id: '/_authenticated/company/$slug/dashboard'
+      path: '/dashboard'
+      fullPath: '/company/$slug/dashboard'
+      preLoaderRoute: typeof AuthenticatedCompanySlugDashboardRouteImport
+      parentRoute: typeof AuthenticatedCompanySlugRoute
+    }
+    '/_authenticated/company/$slug/invoice/new': {
+      id: '/_authenticated/company/$slug/invoice/new'
+      path: '/invoice/new'
+      fullPath: '/company/$slug/invoice/new'
+      preLoaderRoute: typeof AuthenticatedCompanySlugInvoiceNewRouteImport
+      parentRoute: typeof AuthenticatedCompanySlugRoute
+    }
+    '/_authenticated/company/$slug/document/$id': {
+      id: '/_authenticated/company/$slug/document/$id'
+      path: '/document/$id'
+      fullPath: '/company/$slug/document/$id'
+      preLoaderRoute: typeof AuthenticatedCompanySlugDocumentIdRouteImport
+      parentRoute: typeof AuthenticatedCompanySlugRoute
+    }
+    '/_authenticated/company/$slug/challan/new': {
+      id: '/_authenticated/company/$slug/challan/new'
+      path: '/challan/new'
+      fullPath: '/company/$slug/challan/new'
+      preLoaderRoute: typeof AuthenticatedCompanySlugChallanNewRouteImport
+      parentRoute: typeof AuthenticatedCompanySlugRoute
+    }
   }
 }
 
+interface AuthenticatedCompanySlugRouteChildren {
+  AuthenticatedCompanySlugDashboardRoute: typeof AuthenticatedCompanySlugDashboardRoute
+  AuthenticatedCompanySlugChallanNewRoute: typeof AuthenticatedCompanySlugChallanNewRoute
+  AuthenticatedCompanySlugDocumentIdRoute: typeof AuthenticatedCompanySlugDocumentIdRoute
+  AuthenticatedCompanySlugInvoiceNewRoute: typeof AuthenticatedCompanySlugInvoiceNewRoute
+}
+
+const AuthenticatedCompanySlugRouteChildren: AuthenticatedCompanySlugRouteChildren =
+  {
+    AuthenticatedCompanySlugDashboardRoute:
+      AuthenticatedCompanySlugDashboardRoute,
+    AuthenticatedCompanySlugChallanNewRoute:
+      AuthenticatedCompanySlugChallanNewRoute,
+    AuthenticatedCompanySlugDocumentIdRoute:
+      AuthenticatedCompanySlugDocumentIdRoute,
+    AuthenticatedCompanySlugInvoiceNewRoute:
+      AuthenticatedCompanySlugInvoiceNewRoute,
+  }
+
+const AuthenticatedCompanySlugRouteWithChildren =
+  AuthenticatedCompanySlugRoute._addFileChildren(
+    AuthenticatedCompanySlugRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedCompanySlugRoute: typeof AuthenticatedCompanySlugRoute
+  AuthenticatedCompanySlugRoute: typeof AuthenticatedCompanySlugRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedCompanySlugRoute: AuthenticatedCompanySlugRoute,
+  AuthenticatedCompanySlugRoute: AuthenticatedCompanySlugRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =

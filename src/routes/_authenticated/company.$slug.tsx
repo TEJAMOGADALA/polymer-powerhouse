@@ -52,23 +52,24 @@ function CompanyPage() {
             title="Delivery Challan"
             desc="Create, print, and track delivery challans."
             icon={<FileText className="h-6 w-6" />}
-            href={`/company/${slug}/challan/new`}
+            to="/company/$slug/challan/new"
+            slug={slug}
             theme={theme}
           />
           <ModuleCard
             title="Tax Invoice"
             desc="Generate GST invoices with full workflow."
             icon={<Receipt className="h-6 w-6" />}
-            href={`/company/${slug}/invoice/new`}
+            to="/company/$slug/invoice/new"
+            slug={slug}
             theme={theme}
           />
         </div>
 
         <div className="mt-10 glass rounded-2xl p-6 text-sm text-muted-foreground">
-          <p className="font-medium text-foreground">Coming next</p>
+          <p className="font-medium text-foreground">Tip</p>
           <p className="mt-1">
-            Structured Challan &amp; Invoice forms with PDF generation, 24-hour cancel window,
-            dashboards, and Supabase Storage-backed PDF archive.
+            All generated documents live under the Dashboard, with a 24-hour cancellation window.
           </p>
         </div>
       </div>
@@ -77,13 +78,14 @@ function CompanyPage() {
 }
 
 function ModuleCard({
-  title, desc, icon, href, theme,
+  title, desc, icon, to, slug, theme,
 }: {
-  title: string; desc: string; icon: React.ReactNode; href: string; theme: CompanyTheme;
+  title: string; desc: string; icon: React.ReactNode; to: "/company/$slug/challan/new" | "/company/$slug/invoice/new"; slug: string; theme: CompanyTheme;
 }) {
   return (
-    <a
-      href={href}
+    <Link
+      to={to}
+      params={{ slug }}
       className="glass group block rounded-2xl p-6 transition hover:-translate-y-0.5 hover:shadow-xl"
     >
       <div className={`inline-grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br ${themeGradient[theme]} text-white shadow-lg`}>
@@ -92,6 +94,6 @@ function ModuleCard({
       <h3 className="mt-4 text-lg font-bold">{title}</h3>
       <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
       <p className="mt-4 text-xs font-semibold text-primary group-hover:underline">Open module →</p>
-    </a>
+    </Link>
   );
 }
