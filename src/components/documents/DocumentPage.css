@@ -1,0 +1,97 @@
+/* Page-scoped styles for physical document templates.
+   Sized to A4 (210mm × 297mm) at 96dpi = 794 × 1123 px. */
+.doc-page {
+  width: 794px;
+  min-height: 1123px;
+  background: #ffffff;
+  color: #0a1e5c;
+  font-family: "Times New Roman", Times, serif;
+  padding: 24px;
+  box-sizing: border-box;
+  position: relative;
+  margin: 0 auto;
+}
+.doc-frame {
+  border: 3px double #0a1e5c;
+  padding: 10px 14px;
+  min-height: 1075px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.doc-input,
+.doc-textarea {
+  background: transparent;
+  border: none;
+  outline: none;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  width: 100%;
+  resize: none;
+}
+.doc-input:focus,
+.doc-textarea:focus {
+  background: #eef4ff;
+}
+.doc-line {
+  border-bottom: 1px dotted #0a1e5c;
+  min-height: 20px;
+  display: inline-block;
+  padding: 1px 4px;
+}
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #0a1e5c;
+}
+.doc-table th,
+.doc-table td {
+  border: 1.5px solid #0a1e5c;
+  padding: 4px 6px;
+  vertical-align: top;
+}
+.doc-table th {
+  font-weight: 700;
+  text-align: center;
+  background: #f4f8ff;
+}
+.doc-badge {
+  background: #0a1e5c;
+  color: #fff;
+  padding: 4px 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  display: inline-block;
+  border-radius: 2px;
+}
+.doc-title {
+  font-family: "Times New Roman", Times, serif;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 3px;
+}
+.doc-watermark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.doc-watermark span {
+  color: rgba(220, 38, 38, 0.28);
+  font-size: 140px;
+  font-weight: 900;
+  letter-spacing: 20px;
+  transform: rotate(-28deg);
+  border: 8px solid rgba(220, 38, 38, 0.28);
+  padding: 16px 40px;
+  border-radius: 12px;
+}
+
+/* Read-only rendering when a doc is saved / cancelled */
+.doc-readonly .doc-input,
+.doc-readonly .doc-textarea {
+  pointer-events: none;
+  background: transparent;
+}
