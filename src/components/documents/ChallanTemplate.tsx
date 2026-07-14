@@ -78,10 +78,7 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
       data.rows.map((r) => {
         const lines = (r.packing || "").split("\n");
         const qtyLines = lines.map((l) => (l.trim() ? computeLineQty(l) : null));
-        const total = qtyLines.reduce<number>(
-          (a, v) => a + (typeof v === "number" ? v : 0),
-          0,
-        );
+        const total = qtyLines.reduce<number>((a, v) => a + (typeof v === "number" ? v : 0), 0);
         return { lines, qtyLines, total };
       }),
     [data.rows],
@@ -136,9 +133,7 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
               <input
                 className="doc-input"
                 value={data.docNumber}
-                onChange={(e) =>
-                  update({ ...data, docNumber: e.target.value.replace(/\D+/g, "") })
-                }
+                onChange={(e) => update({ ...data, docNumber: e.target.value.replace(/\D+/g, "") })}
                 readOnly={readOnly}
                 inputMode="numeric"
                 pattern="\d*"
@@ -203,7 +198,6 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
                       onBlur={() => normalizeRowOnBlur(i)}
                       readOnly={readOnly}
                       style={{ minHeight: 32 }}
-                      placeholder="e.g. 30x50"
                     />
                   </td>
                   <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
@@ -244,17 +238,13 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
               <td colSpan={3} style={{ textAlign: "right", fontWeight: 700 }}>
                 GRAND TOTAL
               </td>
-              <td style={{ textAlign: "right", fontWeight: 700 }}>
-                {grandTotal > 0 ? `${grandTotal} kg` : ""}
-              </td>
+              <td style={{ textAlign: "right", fontWeight: 700 }}>{grandTotal > 0 ? `${grandTotal} kg` : ""}</td>
             </tr>
           </tbody>
         </table>
 
         <div style={{ marginTop: "auto", fontSize: 12 }}>
-          <div style={{ textAlign: "right", marginTop: 12, fontWeight: 700 }}>
-            For {profile.name}
-          </div>
+          <div style={{ textAlign: "right", marginTop: 12, fontWeight: 700 }}>For {profile.name}</div>
           <div
             style={{
               display: "flex",
