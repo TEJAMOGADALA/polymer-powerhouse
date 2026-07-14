@@ -124,8 +124,7 @@ export async function cancelDocument(id: string, pdfBlob: Blob): Promise<void> {
 }
 
 export async function listDocuments(slug: string, type: DocType): Promise<DocumentRow[]> {
-  // Run auto-approve first (idempotent)
-  await supabase.rpc("auto_approve_documents").catch(() => {});
+  try { await supabase.rpc("auto_approve_documents" as never); } catch { /* noop */ }
   const { data, error } = await supabase
     .from("documents")
     .select("*")
