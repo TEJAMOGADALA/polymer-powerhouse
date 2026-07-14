@@ -64,7 +64,7 @@ export async function saveNewDocument(args: {
       document_type: type,
       document_number: docNumber,
       customer_name: customerName,
-      payload,
+      payload: payload as never,
       created_by: uid,
       status: "generated",
     })
