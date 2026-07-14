@@ -246,6 +246,57 @@ export type Database = {
         }
         Relationships: []
       }
+      documents: {
+        Row: {
+          approval_due_at: string
+          cancelled_at: string | null
+          company_name: string
+          company_slug: string
+          created_at: string
+          created_by: string | null
+          customer_name: string
+          document_number: string
+          document_type: Database["public"]["Enums"]["document_type"]
+          id: string
+          payload: Json
+          pdf_path: string | null
+          status: Database["public"]["Enums"]["document_status"]
+          updated_at: string
+        }
+        Insert: {
+          approval_due_at?: string
+          cancelled_at?: string | null
+          company_name: string
+          company_slug: string
+          created_at?: string
+          created_by?: string | null
+          customer_name: string
+          document_number: string
+          document_type: Database["public"]["Enums"]["document_type"]
+          id?: string
+          payload?: Json
+          pdf_path?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          updated_at?: string
+        }
+        Update: {
+          approval_due_at?: string
+          cancelled_at?: string | null
+          company_name?: string
+          company_slug?: string
+          created_at?: string
+          created_by?: string | null
+          customer_name?: string
+          document_number?: string
+          document_type?: Database["public"]["Enums"]["document_type"]
+          id?: string
+          payload?: Json
+          pdf_path?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           approved_at: string | null
@@ -391,6 +442,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auto_approve_documents: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -402,6 +454,8 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       doc_status: "draft" | "generated" | "approved" | "rejected"
+      document_status: "generated" | "approved" | "cancelled"
+      document_type: "challan" | "invoice"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -531,6 +585,8 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       doc_status: ["draft", "generated", "approved", "rejected"],
+      document_status: ["generated", "approved", "cancelled"],
+      document_type: ["challan", "invoice"],
     },
   },
 } as const
