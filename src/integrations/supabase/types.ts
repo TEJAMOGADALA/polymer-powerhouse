@@ -14,16 +14,394 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: []
+      }
+      companies: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string | null
+          gstin: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          phone: string | null
+          slug: string
+          theme_color: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          gstin?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          phone?: string | null
+          slug: string
+          theme_color: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          gstin?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          phone?: string | null
+          slug?: string
+          theme_color?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      customers: {
+        Row: {
+          address: string | null
+          company_id: string
+          created_at: string
+          email: string | null
+          gstin: string | null
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          company_id: string
+          created_at?: string
+          email?: string | null
+          gstin?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          company_id?: string
+          created_at?: string
+          email?: string | null
+          gstin?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_challans: {
+        Row: {
+          approved_at: string | null
+          cancelled_by: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          customer_address: string | null
+          customer_gstin: string | null
+          customer_name: string
+          document_date: string
+          document_number: string
+          id: string
+          items: Json
+          notes: string | null
+          pdf_path: string | null
+          po_number: string | null
+          rejected_at: string | null
+          status: Database["public"]["Enums"]["doc_status"]
+          subtotal: number | null
+          total: number | null
+          transport_mode: string | null
+          updated_at: string
+          vehicle_number: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          cancelled_by?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          customer_address?: string | null
+          customer_gstin?: string | null
+          customer_name: string
+          document_date?: string
+          document_number: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          pdf_path?: string | null
+          po_number?: string | null
+          rejected_at?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          subtotal?: number | null
+          total?: number | null
+          transport_mode?: string | null
+          updated_at?: string
+          vehicle_number?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          cancelled_by?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          customer_address?: string | null
+          customer_gstin?: string | null
+          customer_name?: string
+          document_date?: string
+          document_number?: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          pdf_path?: string | null
+          po_number?: string | null
+          rejected_at?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          subtotal?: number | null
+          total?: number | null
+          transport_mode?: string | null
+          updated_at?: string
+          vehicle_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_challans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_status_history: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          document_id: string
+          document_type: string
+          from_status: Database["public"]["Enums"]["doc_status"] | null
+          id: string
+          note: string | null
+          to_status: Database["public"]["Enums"]["doc_status"]
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          document_id: string
+          document_type: string
+          from_status?: Database["public"]["Enums"]["doc_status"] | null
+          id?: string
+          note?: string | null
+          to_status: Database["public"]["Enums"]["doc_status"]
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          document_id?: string
+          document_type?: string
+          from_status?: Database["public"]["Enums"]["doc_status"] | null
+          id?: string
+          note?: string | null
+          to_status?: Database["public"]["Enums"]["doc_status"]
+        }
+        Relationships: []
+      }
+      invoices: {
+        Row: {
+          approved_at: string | null
+          cancelled_by: string | null
+          cgst: number | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          customer_address: string | null
+          customer_gstin: string | null
+          customer_name: string
+          document_date: string
+          document_number: string
+          id: string
+          igst: number | null
+          items: Json
+          notes: string | null
+          pdf_path: string | null
+          place_of_supply: string | null
+          po_number: string | null
+          rejected_at: string | null
+          sgst: number | null
+          status: Database["public"]["Enums"]["doc_status"]
+          subtotal: number | null
+          total: number | null
+          transport_mode: string | null
+          updated_at: string
+          vehicle_number: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          cancelled_by?: string | null
+          cgst?: number | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          customer_address?: string | null
+          customer_gstin?: string | null
+          customer_name: string
+          document_date?: string
+          document_number: string
+          id?: string
+          igst?: number | null
+          items?: Json
+          notes?: string | null
+          pdf_path?: string | null
+          place_of_supply?: string | null
+          po_number?: string | null
+          rejected_at?: string | null
+          sgst?: number | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          subtotal?: number | null
+          total?: number | null
+          transport_mode?: string | null
+          updated_at?: string
+          vehicle_number?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          cancelled_by?: string | null
+          cgst?: number | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          customer_address?: string | null
+          customer_gstin?: string | null
+          customer_name?: string
+          document_date?: string
+          document_number?: string
+          id?: string
+          igst?: number | null
+          items?: Json
+          notes?: string | null
+          pdf_path?: string | null
+          place_of_supply?: string | null
+          po_number?: string | null
+          rejected_at?: string | null
+          sgst?: number | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          subtotal?: number | null
+          total?: number | null
+          transport_mode?: string | null
+          updated_at?: string
+          vehicle_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      doc_status: "draft" | "generated" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +528,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      doc_status: ["draft", "generated", "approved", "rejected"],
+    },
   },
 } as const
