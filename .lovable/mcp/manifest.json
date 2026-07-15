@@ -54,7 +54,7 @@
                 "draft",
                 "generated",
                 "approved",
-                "cancelled"
+                "rejected"
               ],
               "description": "Filter by document status."
             },
@@ -92,7 +92,7 @@
                 "draft",
                 "generated",
                 "approved",
-                "cancelled"
+                "rejected"
               ]
             },
             "limit": {

@@ -8,7 +8,7 @@ export default defineTool({
   description: "List delivery challans you created, optionally filtered by company slug or status.",
   inputSchema: {
     company_slug: z.string().optional().describe("Filter by company slug."),
-    status: z.enum(["draft", "generated", "approved", "cancelled"]).optional(),
+    status: z.enum(["draft", "generated", "approved", "rejected"]).optional(),
     limit: z.number().int().min(1).max(200).optional(),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
@@ -28,7 +28,7 @@ export default defineTool({
         .select("id")
         .eq("slug", company_slug)
         .maybeSingle();
-      if (!company) {
+      if (!company?.id) {
         return { content: [{ type: "text", text: `No company with slug '${company_slug}'` }], isError: true };
       }
       query = query.eq("company_id", company.id);
