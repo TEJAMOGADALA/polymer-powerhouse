@@ -76,6 +76,7 @@ export const COMPANY_PROFILES: Record<CompanySlug, CompanyProfile> = {
   "suryateja-poly-films": {
     slug: "suryateja-poly-films",
     name: "SURYATEJA POLY FILMS",
+    logoUrl: stpLogo.url,
     gstin: "37BLCPS1764F1ZZ",
     pan: "BLCPS1764F",
     udyam: "UDYAM-AP-10-0059145",
