@@ -168,7 +168,7 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                 position: "absolute",
                 right: 30,
                 top: 60,
-                fontSize: 12,
+                fontSize: 15,
                 display: "flex",
                 flexDirection: "column",
                 gap: 4,
@@ -177,7 +177,14 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
               }}
             >
               <div style={{ display: "flex", gap: 4 }}>
-                <span style={{ fontWeight: 700 }}>Inv.No.</span>
+                <span
+                  style={{
+                    fontWeight: 700,
+                    fontSize: 16,
+                  }}
+                >
+                  Inv.No.
+                </span>
                 <input
                   className="doc-input"
                   value={data.docNumber}
