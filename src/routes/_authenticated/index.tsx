@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { type CompanyTheme } from "@/lib/companies";
+import { COMPANY_LOGOS } from "@/lib/company-profiles";
 import { ArrowRight, FileText, Receipt, Truck, ShieldCheck } from "lucide-react";
 import heroVideo from "@/assets/PolytheneMfcVideo.mp4.asset.json";
 import srBg from "@/assets/SRPolymersBG.png.asset.json";
