@@ -128,6 +128,13 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "customers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       delivery_challans: {
@@ -209,6 +216,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_challans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -390,6 +404,13 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "invoices_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -439,7 +460,27 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      companies_public: {
+        Row: {
+          id: string | null
+          name: string | null
+          slug: string | null
+          theme_color: string | null
+        }
+        Insert: {
+          id?: string | null
+          name?: string | null
+          slug?: string | null
+          theme_color?: string | null
+        }
+        Update: {
+          id?: string | null
+          name?: string | null
+          slug?: string | null
+          theme_color?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       auto_approve_documents: { Args: never; Returns: undefined }
