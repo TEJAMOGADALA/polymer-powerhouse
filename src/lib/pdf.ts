@@ -36,7 +36,10 @@ export async function renderElementToPdf(el: HTMLElement): Promise<Blob> {
     span.textContent = val ? `${prefix}${val}${suffix}` : "";
     span.style.cssText = cs.cssText;
     span.style.display = "inline-block";
-    span.style.width = "100%";
+
+    if (orig?.style.width) {
+      span.style.width = orig.style.width;
+    }
     span.style.background = "transparent";
     span.style.borderTop = "none";
     span.style.borderLeft = "none";
