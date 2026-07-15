@@ -229,10 +229,37 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
               );
             })}
             <tr>
-              <td colSpan={3} style={{ textAlign: "right", fontWeight: 700 }}>
+              <td style={{ background: "#f4f8ff" }} />
+              <td
+                style={{
+                  textAlign: "right",
+                  fontWeight: 800,
+                  background: "#f4f8ff",
+                  paddingRight: 8,
+                }}
+              >
                 GRAND TOTAL
               </td>
-              <td style={{ textAlign: "right", fontWeight: 700 }}>{grandTotal > 0 ? `${grandTotal} kg` : ""}</td>
+              <td
+                style={{
+                  textAlign: "center",
+                  fontWeight: 700,
+                  background: "#f4f8ff",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {grandBags > 0 ? `${grandBags} Bags` : ""}
+              </td>
+              <td
+                style={{
+                  textAlign: "right",
+                  fontWeight: 700,
+                  background: "#f4f8ff",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {grandTotal > 0 ? `${grandTotal} kg` : ""}
+              </td>
             </tr>
           </tbody>
         </table>
