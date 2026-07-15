@@ -62,16 +62,24 @@ export async function renderElementToPdf(el: HTMLElement): Promise<Blob> {
   });
 
   const originalSelects = Array.from(el.querySelectorAll<HTMLSelectElement>("select"));
+
   const cloneSelects = Array.from(clone.querySelectorAll<HTMLSelectElement>("select"));
+
   cloneSelects.forEach((s, idx) => {
     const orig = originalSelects[idx];
+
     const cs = orig ? window.getComputedStyle(orig) : window.getComputedStyle(s);
+
     const span = document.createElement("span");
-    span.textContent = s.options[s.selectedIndex]?.text ?? "";
+
+    const selectedValue = orig?.value ?? s.value;
+
+    span.textContent = selectedValue === "0" ? "NONE" : `${selectedValue}%`;
+
     span.style.cssText = cs.cssText;
     span.style.background = "transparent";
-    span.style.appearance = "none";
     span.style.border = "none";
+
     s.replaceWith(span);
   });
 
