@@ -208,18 +208,6 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
                             {v !== null ? `${v} kg` : "\u00a0"}
                           </div>
                         ))}
-                        {info.qtyLines.filter((v) => v !== null).length > 1 && (
-                          <div
-                            style={{
-                              borderTop: "1px solid #0a1e5c",
-                              marginTop: 2,
-                              paddingTop: 2,
-                              fontWeight: 700,
-                            }}
-                          >
-                            {info.total} kg
-                          </div>
-                        )}
                       </>
                     ) : (
                       <input
