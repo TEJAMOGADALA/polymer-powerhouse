@@ -38,6 +38,7 @@ export const COMPANY_PROFILES: Record<CompanySlug, CompanyProfile> = {
   "shiva-sai-polymers": {
     slug: "shiva-sai-polymers",
     name: "SHIVA SAI POLYMERS",
+    logoUrl: sspLogo.url,
     gstin: "37ABZPP5102A1ZN",
     pan: "ABZPP5102A",
     udyam: "UDYAM-AP-10-0055233",
