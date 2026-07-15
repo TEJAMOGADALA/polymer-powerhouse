@@ -250,7 +250,6 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
               display: "flex",
               justifyContent: "space-between",
               padding: "18px 4px 6px",
-              borderTop: "1px solid #0a1e5c",
               marginTop: 12,
             }}
           >
