@@ -168,7 +168,7 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                 position: "absolute",
                 right: 30,
                 top: 60,
-                fontSize: 15,
+                fontSize: 13,
                 display: "flex",
                 flexDirection: "column",
                 gap: 4,
