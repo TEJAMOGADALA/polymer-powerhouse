@@ -231,7 +231,7 @@ function StatusBadge({ status }: { status: DocStatus }) {
   }
   return (
     <Badge variant="outline" className="border-green-300 bg-green-100 text-green-800">
-      ACTIVE
+      APPROVED
     </Badge>
   );
 }
@@ -382,7 +382,7 @@ function DocList({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="active">Approved</SelectItem>
             <SelectItem value="cancelled">Cancelled</SelectItem>
           </SelectContent>
         </Select>
