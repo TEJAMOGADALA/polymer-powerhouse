@@ -399,21 +399,39 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
             ].map(([label, val, kind]) => (
               <tr key={label}>
                 <td colSpan={4} style={{ border: "none" }} />
-                <td style={{ fontWeight: 700, textAlign: "right", padding: "3px 6px" }}>
+                <td
+                  style={{
+                    fontWeight: 700,
+                    textAlign: "right",
+                    padding: "3px 6px",
+                  }}
+                >
                   {kind === "cgst" ? (
                     <>
                       CGST @{" "}
-                      <TaxSelect value={data.cgstRate} onChange={(v) => update({ cgstRate: v })} options={rateOpts} />
+                      {readOnly ? (
+                        <span style={{ fontWeight: 700 }}>{data.cgstRate}%</span>
+                      ) : (
+                        <TaxSelect value={data.cgstRate} onChange={(v) => update({ cgstRate: v })} options={rateOpts} />
+                      )}
                     </>
                   ) : kind === "sgst" ? (
                     <>
                       SGST @{" "}
-                      <TaxSelect value={data.sgstRate} onChange={(v) => update({ sgstRate: v })} options={rateOpts} />
+                      {readOnly ? (
+                        <span style={{ fontWeight: 700 }}>{data.sgstRate}%</span>
+                      ) : (
+                        <TaxSelect value={data.sgstRate} onChange={(v) => update({ sgstRate: v })} options={rateOpts} />
+                      )}
                     </>
                   ) : kind === "igst" ? (
                     <>
                       IGST @{" "}
-                      <TaxSelect value={data.igstRate} onChange={(v) => update({ igstRate: v })} options={igstOpts} />
+                      {readOnly ? (
+                        <span style={{ fontWeight: 700 }}>{data.igstRate}%</span>
+                      ) : (
+                        <TaxSelect value={data.igstRate} onChange={(v) => update({ igstRate: v })} options={igstOpts} />
+                      )}
                     </>
                   ) : (
                     label
