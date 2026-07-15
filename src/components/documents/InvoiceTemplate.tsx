@@ -334,6 +334,13 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                       className="doc-input"
                       value={r.rate}
                       onChange={(e) => updateRow(i, "rate", e.target.value.replace(/[^\d.]/g, ""))}
+                      onBlur={(e) => {
+                        const val = parseFloat(e.target.value);
+
+                        if (!isNaN(val)) {
+                          updateRow(i, "rate", val.toFixed(2));
+                        }
+                      }}
                       inputMode="decimal"
                       data-doc-prefix="₹"
                       style={{ textAlign: "center" }}
