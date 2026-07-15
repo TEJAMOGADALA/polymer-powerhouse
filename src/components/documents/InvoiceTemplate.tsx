@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import "./DocumentPage.css";
 import { CompanyHeader } from "./CompanyHeader";
 import type { CompanyProfile } from "@/lib/company-profiles";
+import { amountInWords } from "@/lib/amount-in-words";
 
 export interface InvoiceRow {
   desc: string;
@@ -121,6 +122,15 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
   const sgstAmt = (subTotal * parseFloat(data.sgstRate || "0")) / 100;
   const igstAmt = (subTotal * parseFloat(data.igstRate || "0")) / 100;
   const grandTotal = subTotal + cgstAmt + sgstAmt + igstAmt;
+  const autoWords = useMemo(() => amountInWords(grandTotal), [grandTotal]);
+  useEffect(() => {
+    if (autoWords && autoWords !== data.amountInWords) {
+      const next = { ...data, amountInWords: autoWords };
+      setData(next);
+      onChange?.(next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoWords]);
 
   const rateOpts: TaxRate[] = ["0", "2.5", "5", "9"];
   const igstOpts: TaxRate[] = ["0", "2.5", "5", "18"];
@@ -165,26 +175,14 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
           rightMeta={
             <div
               style={{
-                position: "absolute",
-                right: 30,
-                top: 40,
                 fontSize: 13,
                 display: "flex",
                 flexDirection: "column",
-                gap: 4,
-                background: "#fff",
-                padding: "2px 6px",
+                gap: 6,
               }}
             >
-              <div style={{ display: "flex", gap: 4 }}>
-                <span
-                  style={{
-                    fontWeight: 700,
-                    fontSize: 16,
-                  }}
-                >
-                  Inv.No.
-                </span>
+              <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                <span style={{ fontWeight: 700, fontSize: 16 }}>Inv.No.</span>
                 <input
                   className="doc-input"
                   value={data.docNumber}
@@ -195,7 +193,7 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                   style={{ borderBottom: "1px dotted #0a1e5c", width: 70, color: "#b91c1c", fontWeight: 700 }}
                 />
               </div>
-              <div style={{ display: "flex", gap: 4 }}>
+              <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                 <span style={{ fontWeight: 700 }}>Date :</span>
                 <input
                   type="date"
@@ -203,7 +201,7 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                   value={data.date}
                   onChange={(e) => update({ date: e.target.value })}
                   readOnly={readOnly}
-                  style={{ borderBottom: "1px dotted #0a1e5c", width: 90 }}
+                  style={{ borderBottom: "1px dotted #0a1e5c", width: 110 }}
                 />
               </div>
             </div>

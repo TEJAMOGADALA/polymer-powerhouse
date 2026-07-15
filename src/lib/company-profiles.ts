@@ -1,3 +1,7 @@
+import srpLogo from "@/assets/SRPLogo.png.asset.json";
+import sspLogo from "@/assets/SSPLogo.png.asset.json";
+import stpLogo from "@/assets/STPLogo.png.asset.json";
+
 export type CompanySlug = "shiva-sai-polymers" | "sr-polymers" | "suryateja-poly-films";
 
 export interface BankDetails {
@@ -11,6 +15,7 @@ export interface BankDetails {
 export interface CompanyProfile {
   slug: CompanySlug;
   name: string;
+  logoUrl?: string;
   gstin: string;
   pan?: string;
   udyam?: string;
@@ -23,10 +28,17 @@ export interface CompanyProfile {
   bank: BankDetails;
 }
 
+export const COMPANY_LOGOS: Record<CompanySlug, string> = {
+  "sr-polymers": srpLogo.url,
+  "shiva-sai-polymers": sspLogo.url,
+  "suryateja-poly-films": stpLogo.url,
+};
+
 export const COMPANY_PROFILES: Record<CompanySlug, CompanyProfile> = {
   "shiva-sai-polymers": {
     slug: "shiva-sai-polymers",
     name: "SHIVA SAI POLYMERS",
+    logoUrl: sspLogo.url,
     gstin: "37ABZPP5102A1ZN",
     pan: "ABZPP5102A",
     udyam: "UDYAM-AP-10-0055233",
@@ -45,6 +57,7 @@ export const COMPANY_PROFILES: Record<CompanySlug, CompanyProfile> = {
   "sr-polymers": {
     slug: "sr-polymers",
     name: "S R POLYMERS",
+    logoUrl: srpLogo.url,
     gstin: "37ABZPP5103B1ZK",
     pan: "ABZPP5103B",
     udyam: "UDYAM-AP-10-0003858",
@@ -63,6 +76,7 @@ export const COMPANY_PROFILES: Record<CompanySlug, CompanyProfile> = {
   "suryateja-poly-films": {
     slug: "suryateja-poly-films",
     name: "SURYATEJA POLY FILMS",
+    logoUrl: stpLogo.url,
     gstin: "37BLCPS1764F1ZZ",
     pan: "BLCPS1764F",
     udyam: "UDYAM-AP-10-0059145",

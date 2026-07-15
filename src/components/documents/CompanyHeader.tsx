@@ -12,12 +12,16 @@ export function CompanyHeader({
   showTriplicate?: boolean;
   rightMeta?: React.ReactNode;
 }) {
+  const cols: string[] = ["1fr", "auto"];
+  if (showTriplicate) cols.push("auto");
+  if (rightMeta) cols.push("auto");
+
   return (
     <div style={{ borderBottom: "2px solid #0a1e5c" }}>
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: showTriplicate ? "1fr auto auto" : "1fr auto",
+          gridTemplateColumns: cols.join(" "),
           alignItems: "start",
           padding: "4px 8px",
           fontSize: 12,
@@ -39,8 +43,9 @@ export function CompanyHeader({
               borderLeft: "1.5px solid #0a1e5c",
               paddingLeft: 8,
               fontSize: 11,
-              lineHeight: 1.3,
+              lineHeight: 1.35,
               minWidth: 140,
+              whiteSpace: "nowrap",
             }}
           >
             <div>Original for Buyer</div>
@@ -48,13 +53,39 @@ export function CompanyHeader({
             <div>Triplicate for Supplier</div>
           </div>
         )}
+        {rightMeta && (
+          <div
+            style={{
+              borderLeft: "1.5px solid #0a1e5c",
+              paddingLeft: 8,
+              minWidth: 170,
+            }}
+          >
+            {rightMeta}
+          </div>
+        )}
       </div>
 
       <div
         className="doc-title"
-        style={{ fontSize: 32, padding: "2px 0", lineHeight: 1 }}
+        style={{
+          fontSize: 32,
+          padding: "2px 0",
+          lineHeight: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 14,
+        }}
       >
-        {profile.name}
+        {profile.logoUrl && (
+          <img
+            src={profile.logoUrl}
+            alt=""
+            style={{ height: 44, width: 44, objectFit: "contain", borderRadius: 4 }}
+          />
+        )}
+        <span>{profile.name}</span>
       </div>
 
       <div style={{ padding: "2px 8px 6px", fontSize: 11.5, textAlign: "center" }}>
@@ -71,7 +102,6 @@ export function CompanyHeader({
           <div style={{ padding: "3px 0" }}>{profile.address}</div>
         )}
       </div>
-      {rightMeta}
     </div>
   );
 }
