@@ -545,7 +545,7 @@ function RecentActivity({ rows }: { rows: DocumentRow[] }) {
       evs.push({ at: new Date(r.created_at), kind: "Created", row: r });
       if (r.cancelled_at) evs.push({ at: new Date(r.cancelled_at), kind: "Cancelled", row: r });
     }
-    return evs.sort((a, b) => b.at.getTime() - a.at.getTime()).slice(0, 10);
+    return evs.sort((a, b) => b.at.getTime() - a.at.getTime()).slice(0, 2);
   }, [rows]);
 
   return (
