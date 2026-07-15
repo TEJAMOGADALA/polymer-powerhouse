@@ -2,7 +2,6 @@
    Sized to A4 (210mm × 297mm) at 96dpi = 794 × 1123 px. */
 .doc-page {
   width: 794px;
-  min-height: 1123px;
   background: #ffffff;
   color: #0a1e5c;
   font-family: "Times New Roman", Times, serif;
@@ -14,7 +13,6 @@
 .doc-frame {
   border: 3px double #0a1e5c;
   padding: 10px 14px;
-  min-height: 1075px;
   position: relative;
   display: flex;
   flex-direction: column;

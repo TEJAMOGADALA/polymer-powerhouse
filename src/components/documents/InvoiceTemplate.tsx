@@ -477,7 +477,7 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
             padding: "8px 4px",
             fontSize: 11.5,
             gap: 8,
-            marginTop: "auto",
+            marginTop: 12,
           }}
         >
           <div>

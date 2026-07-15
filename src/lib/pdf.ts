@@ -13,8 +13,7 @@ import jsPDF from "jspdf";
  */
 export async function renderElementToPdf(el: HTMLElement): Promise<Blob> {
   const host = document.createElement("div");
-  host.style.cssText =
-    "position:fixed;left:-10000px;top:0;width:794px;background:#fff;z-index:-1;";
+  host.style.cssText = "position:fixed;left:-10000px;top:0;width:794px;background:#fff;z-index:-1;";
   const clone = el.cloneNode(true) as HTMLElement;
   clone.style.width = "794px";
   clone.style.margin = "0";
@@ -81,7 +80,7 @@ export async function renderElementToPdf(el: HTMLElement): Promise<Blob> {
 
   try {
     const canvas = await html2canvas(clone, {
-      scale: 2,
+      scale: 3,
       backgroundColor: "#ffffff",
       useCORS: true,
       logging: false,

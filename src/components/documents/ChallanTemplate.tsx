@@ -264,7 +264,7 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
           </tbody>
         </table>
 
-        <div style={{ marginTop: "auto", fontSize: 12 }}>
+        <div style={{ marginTop: 12, fontSize: 12 }}>
           <div style={{ textAlign: "right", marginTop: 12, fontWeight: 700 }}>For {profile.name}</div>
           <div
             style={{
