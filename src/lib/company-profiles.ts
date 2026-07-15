@@ -65,6 +65,7 @@ export const COMPANY_PROFILES: Record<CompanySlug, CompanyProfile> = {
     name: "SURYATEJA POLY FILMS",
     gstin: "37BLCPS1764F1ZZ",
     pan: "BLCPS1764F",
+    udyam: "UDYAM-AP-10-0059145",
     cell: ["9866368228"],
     addressLayout: "single",
     address: "D.NO.1-91, KAPULUPPADA MAIN ROAD, BHEEMILI, VISAKHAPATNAM-531 163",
