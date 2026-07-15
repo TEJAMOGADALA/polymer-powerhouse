@@ -68,6 +68,20 @@ export function emptyInvoiceData(): InvoiceData {
 
 const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+const fmt = (n: number) =>
+  n.toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+function formatDateDDMMYYYY(dateStr: string) {
+  if (!dateStr) return "";
+
+  const [year, month, day] = dateStr.split("-");
+
+  return `${day}-${month}-${year}`;
+}
+
 interface Props {
   profile: CompanyProfile;
   value: InvoiceData;
@@ -201,14 +215,28 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
               </div>
               <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                 <span style={{ fontWeight: 700 }}>Date :</span>
-                <input
-                  type="date"
-                  className="doc-input"
-                  value={data.date}
-                  onChange={(e) => update({ date: e.target.value })}
-                  readOnly={readOnly}
-                  style={{ borderBottom: "1px dotted #0a1e5c", width: 110 }}
-                />
+                {readOnly ? (
+                  <span
+                    style={{
+                      borderBottom: "1px dotted #0a1e5c",
+                      display: "inline-block",
+                      width: 110,
+                    }}
+                  >
+                    {formatDateDDMMYYYY(data.date)}
+                  </span>
+                ) : (
+                  <input
+                    type="date"
+                    className="doc-input"
+                    value={data.date}
+                    onChange={(e) => update({ date: e.target.value })}
+                    style={{
+                      borderBottom: "1px dotted #0a1e5c",
+                      width: 110,
+                    }}
+                  />
+                )}
               </div>
             </div>
           }
