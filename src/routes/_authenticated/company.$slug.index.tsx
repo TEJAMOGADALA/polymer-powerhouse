@@ -31,7 +31,7 @@ function CompanyPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader title={company?.name} dashboardHref={`/company/${slug}/dashboard`} />
+      <AppHeader title={company?.name} logoUrl={COMPANY_LOGOS[slug as CompanySlug]} dashboardHref={`/company/${slug}/dashboard`} />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         <Link to="/" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-3.5 w-3.5" /> All companies
