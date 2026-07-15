@@ -31,7 +31,7 @@ function ViewDocument() {
   if (isLoading || !doc) {
     return (
       <div className="min-h-screen">
-        <AppHeader title={`${profile.name}`} dashboardHref={`/company/${slug}/dashboard`} />
+        <AppHeader title={`${profile.name}`} logoUrl={profile.logoUrl} dashboardHref={`/company/${slug}/dashboard`} />
         <div className="mx-auto max-w-2xl px-4 py-10 text-center text-muted-foreground">Loading…</div>
       </div>
     );
@@ -45,8 +45,10 @@ function ViewDocument() {
     <div className="min-h-screen pb-6">
       <AppHeader
         title={`${profile.name} · ${isChallan ? "Challan" : "Invoice"} #${doc.document_number}`}
+        logoUrl={profile.logoUrl}
         dashboardHref={`/company/${slug}/dashboard`}
       />
+
       <div className="mx-auto max-w-[900px] px-2 py-6 sm:px-4">
         <div className="overflow-x-auto">
           <div ref={ref}>

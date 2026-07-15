@@ -85,7 +85,7 @@ function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100/50 dark:from-slate-950 dark:to-slate-900">
-      <AppHeader title={profile.name} />
+      <AppHeader title={profile.name} logoUrl={profile.logoUrl} />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
         {/* Breadcrumb */}
         <Link

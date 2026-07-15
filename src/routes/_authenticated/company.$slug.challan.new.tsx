@@ -24,7 +24,7 @@ function NewChallan() {
 
   return (
     <div className="min-h-screen pb-6">
-      <AppHeader title={`${profile.name} · New Challan`} dashboardHref={`/company/${slug}/dashboard`} />
+      <AppHeader title={`${profile.name} · New Challan`} logoUrl={profile.logoUrl} dashboardHref={`/company/${slug}/dashboard`} />
       <div className="mx-auto max-w-[900px] px-2 py-6 sm:px-4">
         <div className="overflow-x-auto">
           <div ref={ref}>

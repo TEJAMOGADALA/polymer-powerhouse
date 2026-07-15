@@ -78,14 +78,8 @@ export function CompanyHeader({
           gap: 14,
         }}
       >
-        {profile.logoUrl && (
-          <img
-            src={profile.logoUrl}
-            alt=""
-            style={{ height: 44, width: 44, objectFit: "contain", borderRadius: 4 }}
-          />
-        )}
         <span>{profile.name}</span>
+
       </div>
 
       <div style={{ padding: "2px 8px 6px", fontSize: 11.5, textAlign: "center" }}>
