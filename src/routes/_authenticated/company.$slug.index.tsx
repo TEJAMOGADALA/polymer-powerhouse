@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { themeGradient, type CompanyTheme } from "@/lib/companies";
+import { COMPANY_LOGOS, type CompanySlug } from "@/lib/company-profiles";
+
 import { FileText, Receipt, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/company/$slug/")({
