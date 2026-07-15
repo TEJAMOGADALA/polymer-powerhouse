@@ -207,7 +207,7 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                     width: 120,
                     color: "#b91c1c",
                     fontWeight: 700,
-                    fontSize: 20,
+                    fontSize: 24,
                   }}
                 />
               </div>

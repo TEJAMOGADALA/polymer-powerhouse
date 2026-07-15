@@ -47,7 +47,7 @@
 }
 .doc-table th,
 .doc-table td {
-  border: 1.5px solid #0a1e5c;
+  border: 1px solid #0a1e5c;
   padding: 4px 6px;
   vertical-align: top;
   word-wrap: break-word;
