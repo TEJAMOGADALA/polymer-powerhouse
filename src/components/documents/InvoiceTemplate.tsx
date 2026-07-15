@@ -190,7 +190,13 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
                   readOnly={readOnly}
                   inputMode="numeric"
                   pattern="\d*"
-                  style={{ borderBottom: "1px dotted #0a1e5c", width: 70, color: "#b91c1c", fontWeight: 700 }}
+                  style={{
+                    borderBottom: "1px dotted #0a1e5c",
+                    width: 120,
+                    color: "#b91c1c",
+                    fontWeight: 700,
+                    fontSize: 20,
+                  }}
                 />
               </div>
               <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
