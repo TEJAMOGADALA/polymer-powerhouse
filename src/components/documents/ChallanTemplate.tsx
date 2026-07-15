@@ -78,13 +78,19 @@ export function ChallanTemplate({ profile, value, onChange, readOnly, cancelled 
       data.rows.map((r) => {
         const lines = (r.packing || "").split("\n");
         const qtyLines = lines.map((l) => (l.trim() ? computeLineQty(l) : null));
+        const bagLines = lines.map((l) => {
+          const m = l.trim().match(/^(\d+(?:\.\d+)?)\s*[x×*]/i);
+          return m ? parseFloat(m[1]) : null;
+        });
         const total = qtyLines.reduce<number>((a, v) => a + (typeof v === "number" ? v : 0), 0);
-        return { lines, qtyLines, total };
+        const bags = bagLines.reduce<number>((a, v) => a + (typeof v === "number" ? v : 0), 0);
+        return { lines, qtyLines, bagLines, total, bags };
       }),
     [data.rows],
   );
 
   const grandTotal = perRow.reduce((a, r) => a + r.total, 0);
+  const grandBags = perRow.reduce((a, r) => a + r.bags, 0);
 
   return (
     <div id="doc-print" className={`doc-page ${readOnly ? "doc-readonly" : ""}`}>
