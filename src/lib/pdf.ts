@@ -29,7 +29,12 @@ export async function renderElementToPdf(el: HTMLElement): Promise<Blob> {
     const span = document.createElement("span");
     const prefix = i.getAttribute("data-doc-prefix") ?? "";
     const suffix = i.getAttribute("data-doc-suffix") ?? "";
-    span.textContent = i.value ? `${prefix}${i.value}${suffix}` : "";
+    let val = i.value;
+    if (i.type === "date" && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+      const [y, m, d] = val.split("-");
+      val = `${d}-${m}-${y}`;
+    }
+    span.textContent = val ? `${prefix}${val}${suffix}` : "";
     span.style.cssText = cs.cssText;
     span.style.display = "inline-block";
     span.style.width = "100%";
