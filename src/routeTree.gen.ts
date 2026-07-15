@@ -17,6 +17,7 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedCompanySlugRouteImport } from './routes/_authenticated/company.$slug'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedCompanySlugIndexRouteImport } from './routes/_authenticated/company.$slug.index'
 import { Route as AuthenticatedCompanySlugDashboardRouteImport } from './routes/_authenticated/company.$slug.dashboard'
 import { Route as AuthenticatedCompanySlugInvoiceNewRouteImport } from './routes/_authenticated/company.$slug.invoice.new'
@@ -66,6 +67,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedCompanySlugIndexRoute =
   AuthenticatedCompanySlugIndexRouteImport.update({
     id: '/',
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/company/$slug': typeof AuthenticatedCompanySlugRouteWithChildren
   '/company/$slug/dashboard': typeof AuthenticatedCompanySlugDashboardRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/': typeof AuthenticatedIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/company/$slug/dashboard': typeof AuthenticatedCompanySlugDashboardRoute
   '/company/$slug': typeof AuthenticatedCompanySlugIndexRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/company/$slug': typeof AuthenticatedCompanySlugRouteWithChildren
   '/_authenticated/company/$slug/dashboard': typeof AuthenticatedCompanySlugDashboardRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/company/$slug'
     | '/company/$slug/dashboard'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/company/$slug/dashboard'
     | '/company/$slug'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/company/$slug'
     | '/_authenticated/company/$slug/dashboard'
@@ -191,6 +203,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
@@ -250,6 +263,13 @@ declare module '@tanstack/react-router' {
       path: '/.mcp/invoke-tool/$tool'
       fullPath: '/.mcp/invoke-tool/$tool'
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/company/$slug/': {
@@ -336,6 +356,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
