@@ -71,6 +71,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Digital Delivery Challan & Tax Invoice management for polymer manufacturing companies." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Polymer Document Management System" },
+      { name: "twitter:description", content: "Digital Delivery Challan & Tax Invoice management for polymer manufacturing companies." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/13f83250-3ee1-4943-968f-ec11897961e0/id-preview-b59236e2--5d7dbb9c-293f-4b96-88ff-7744a22fa9cb.lovable.app-1784121846172.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/13f83250-3ee1-4943-968f-ec11897961e0/id-preview-b59236e2--5d7dbb9c-293f-4b96-88ff-7744a22fa9cb.lovable.app-1784121846172.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
