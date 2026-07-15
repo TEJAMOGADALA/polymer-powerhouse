@@ -148,7 +148,13 @@ function CompanyCard({ company }: { company: Company }) {
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest backdrop-blur">
             Workspace
           </span>
-          <ArrowRight className="h-5 w-5 opacity-80 transition group-hover:translate-x-1" />
+          {COMPANY_LOGOS[company.slug as keyof typeof COMPANY_LOGOS] && (
+            <img
+              src={COMPANY_LOGOS[company.slug as keyof typeof COMPANY_LOGOS]}
+              alt=""
+              className="h-14 w-14 rounded-lg bg-white/90 object-contain p-1 shadow"
+            />
+          )}
         </div>
         <div>
           <h3 className="text-2xl font-black leading-tight drop-shadow">{company.name}</h3>
