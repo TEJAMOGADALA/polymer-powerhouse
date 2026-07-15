@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import "./DocumentPage.css";
 import { CompanyHeader } from "./CompanyHeader";
 import type { CompanyProfile } from "@/lib/company-profiles";
+import { amountInWords } from "@/lib/amount-in-words";
 
 export interface InvoiceRow {
   desc: string;
