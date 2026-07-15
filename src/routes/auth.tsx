@@ -14,9 +14,15 @@ import loginVideo from "@/assets/LoginPageMfc.mp4.asset.json";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
-  beforeLoad: async () => {
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : undefined,
+  }),
+  beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getUser();
-    if (data.user) throw redirect({ to: "/" });
+    if (data.user) {
+      const target = search.next && search.next.startsWith("/") ? search.next : "/";
+      throw redirect({ href: target });
+    }
   },
   component: AuthPage,
 });
@@ -30,6 +36,8 @@ const loginSchema = z.object({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  const nextPath = search.next && search.next.startsWith("/") ? search.next : "/";
   const [mode, setMode] = useState<Mode>("login");
   const [busy, setBusy] = useState(false);
   const [recoveryEmail, setRecoveryEmail] = useState("");
@@ -46,7 +54,7 @@ function AuthPage() {
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Signed in");
-    navigate({ to: "/" });
+    window.location.href = nextPath;
   }
 
   async function sendOtp() {
