@@ -66,8 +66,6 @@ export function emptyInvoiceData(): InvoiceData {
   };
 }
 
-const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
 const fmt = (n: number) =>
   n.toLocaleString("en-IN", {
     minimumFractionDigits: 2,
