@@ -28,16 +28,22 @@ interface Props {
 }
 
 export function DocumentActionBar({
-  profile, type, docNumber, customerName, payload, existing, targetRef, onSaved, onCancelled,
+  profile,
+  type,
+  docNumber,
+  customerName,
+  payload,
+  existing,
+  targetRef,
+  onSaved,
+  onCancelled,
 }: Props) {
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
   const savedRef = useRef(false);
 
   const isCancellable =
-    existing?.status === "generated" &&
-    new Date(existing.approval_due_at).getTime() > Date.now();
-
+    existing?.status === "approved" && Date.now() < new Date(existing.created_at).getTime() + 24 * 60 * 60 * 1000;
   async function generateBlob(): Promise<Blob> {
     if (!targetRef.current) throw new Error("Document not mounted");
     return renderElementToPdf(targetRef.current);
@@ -46,8 +52,7 @@ export function DocumentActionBar({
   async function saveNew(): Promise<{ blob: Blob; row: DocumentRow }> {
     if (savedRef.current) throw new Error("Already saved");
     if (!docNumber.trim()) throw new Error("Document number is required.");
-    if (!/^\d+$/.test(docNumber.trim()))
-      throw new Error("Document number must be numeric.");
+    if (!/^\d+$/.test(docNumber.trim())) throw new Error("Document number must be numeric.");
     if (!customerName.trim()) throw new Error("Customer / Buyer name is required.");
     const unique = await checkDocNumberUnique(profile.slug, type, docNumber.trim());
     if (!unique)
@@ -56,7 +61,12 @@ export function DocumentActionBar({
       );
     const blob = await generateBlob();
     const row = await saveNewDocument({
-      profile, type, docNumber: docNumber.trim(), customerName: customerName.trim(), payload, pdfBlob: blob,
+      profile,
+      type,
+      docNumber: docNumber.trim(),
+      customerName: customerName.trim(),
+      payload,
+      pdfBlob: blob,
     });
     savedRef.current = true;
     onSaved?.(row);
@@ -163,7 +173,9 @@ export function DocumentActionBar({
             </>
           ) : (
             <>
-              <Button variant="outline" onClick={openExisting} disabled={busy}>View PDF</Button>
+              <Button variant="outline" onClick={openExisting} disabled={busy}>
+                View PDF
+              </Button>
               <Button variant="outline" onClick={downloadExisting} disabled={busy}>
                 <Download className="mr-1.5 h-4 w-4" /> Download
               </Button>

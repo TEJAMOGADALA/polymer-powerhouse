@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { CompanyProfile } from "./company-profiles";
 
 export type DocType = "challan" | "invoice";
-export type DocStatus = "generated" | "approved" | "cancelled";
+export type DocStatus = "approved" | "cancelled";
 
 export interface DocumentRow {
   id: string;
@@ -25,11 +25,7 @@ function pdfPath(slug: string, type: DocType, docNo: string, id: string) {
   return `${slug}/${type}/${safe}-${id}.pdf`;
 }
 
-export async function checkDocNumberUnique(
-  slug: string,
-  type: DocType,
-  docNumber: string,
-): Promise<boolean> {
+export async function checkDocNumberUnique(slug: string, type: DocType, docNumber: string): Promise<boolean> {
   const { data, error } = await supabase
     .from("documents")
     .select("id")
@@ -64,7 +60,7 @@ export async function saveNewDocument(args: {
       customer_name: customerName,
       payload: payload as never,
       created_by: uid,
-      status: "generated",
+      status: "approved",
     })
     .select()
     .single();
@@ -97,23 +93,19 @@ export async function saveNewDocument(args: {
 }
 
 export async function cancelDocument(id: string, pdfBlob: Blob): Promise<void> {
-  const { data: doc, error } = await supabase
-    .from("documents")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const { data: doc, error } = await supabase.from("documents").select("*").eq("id", id).single();
   if (error) throw error;
   const row = doc as unknown as DocumentRow;
-  if (row.status !== "generated") throw new Error("Document is no longer cancellable.");
-  if (new Date(row.approval_due_at).getTime() <= Date.now())
-    throw new Error("24-hour cancel window has expired.");
+  if (row.status === "cancelled") throw new Error("Document already cancelled.");
+  const cancelDeadline = new Date(row.created_at).getTime() + 24 * 60 * 60 * 1000;
+
+  if (Date.now() > cancelDeadline) throw new Error("24-hour cancel window has expired.");
   if (!row.pdf_path) throw new Error("PDF path missing.");
 
   const { error: upErr } = await supabase.storage
     .from("documents")
     .upload(row.pdf_path, pdfBlob, { contentType: "application/pdf", upsert: true });
   if (upErr) throw upErr;
-
   const { error: updErr } = await supabase
     .from("documents")
     .update({ status: "cancelled", cancelled_at: new Date().toISOString() })
@@ -122,21 +114,36 @@ export async function cancelDocument(id: string, pdfBlob: Blob): Promise<void> {
 }
 
 export async function deleteDocument(id: string): Promise<void> {
-  const { data: doc, error } = await supabase
+  // Fetch document details first
+  const { data: row, error: rowError } = await supabase
     .from("documents")
-    .select("pdf_path")
+    .select("pdf_path, created_at")
     .eq("id", id)
-    .maybeSingle();
-  if (error) throw error;
-  if (doc?.pdf_path) {
-    await supabase.storage.from("documents").remove([doc.pdf_path]);
+    .single();
+
+  if (rowError) throw rowError;
+
+  // Enforce 24-hour delete rule
+  const within24Hours = Date.now() < new Date(row.created_at).getTime() + 24 * 60 * 60 * 1000;
+
+  if (!within24Hours) {
+    throw new Error("Document can only be deleted within 24 hours of creation.");
   }
+
+  // Delete PDF from storage
+  if (row.pdf_path) {
+    const { error: storageError } = await supabase.storage.from("documents").remove([row.pdf_path]);
+
+    if (storageError) throw storageError;
+  }
+
+  // Delete database record
   const { error: delErr } = await supabase.from("documents").delete().eq("id", id);
+
   if (delErr) throw delErr;
 }
 
 export async function listDocuments(slug: string, type: DocType): Promise<DocumentRow[]> {
-  try { await supabase.rpc("auto_approve_documents" as never); } catch { /* noop */ }
   const { data, error } = await supabase
     .from("documents")
     .select("*")
@@ -148,7 +155,6 @@ export async function listDocuments(slug: string, type: DocType): Promise<Docume
 }
 
 export async function listAllDocuments(slug: string): Promise<DocumentRow[]> {
-  try { await supabase.rpc("auto_approve_documents" as never); } catch { /* noop */ }
   const { data, error } = await supabase
     .from("documents")
     .select("*")
@@ -159,16 +165,13 @@ export async function listAllDocuments(slug: string): Promise<DocumentRow[]> {
 }
 
 export async function getDocument(id: string): Promise<DocumentRow> {
-  try { await supabase.rpc("auto_approve_documents" as never); } catch { /* noop */ }
   const { data, error } = await supabase.from("documents").select("*").eq("id", id).single();
   if (error) throw error;
   return data as unknown as DocumentRow;
 }
 
 export async function getSignedPdfUrl(path: string, expiresIn = 300): Promise<string> {
-  const { data, error } = await supabase.storage
-    .from("documents")
-    .createSignedUrl(path, expiresIn);
+  const { data, error } = await supabase.storage.from("documents").createSignedUrl(path, expiresIn);
   if (error) throw error;
   return data.signedUrl;
 }
