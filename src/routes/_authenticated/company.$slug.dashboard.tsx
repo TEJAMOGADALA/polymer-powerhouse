@@ -5,26 +5,45 @@ import * as XLSX from "xlsx";
 import { AppHeader } from "@/components/AppHeader";
 import { getProfile } from "@/lib/company-profiles";
 import {
-  deleteDocument, downloadPdfBlob, listAllDocuments,
-  type DocumentRow, type DocStatus, type DocType,
+  deleteDocument,
+  downloadPdfBlob,
+  listAllDocuments,
+  type DocumentRow,
+  type DocStatus,
+  type DocType,
 } from "@/lib/documents";
 import { downloadBlob } from "@/lib/pdf";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Download, Trash2, FileText, Plus, Receipt, ExternalLink,
-  ArrowLeft, Search, FileDown, FileSpreadsheet,
-  Activity, IndianRupee, Ban, Calendar as CalendarIcon,
+  Download,
+  Trash2,
+  FileText,
+  Plus,
+  Receipt,
+  ExternalLink,
+  ArrowLeft,
+  Search,
+  FileDown,
+  FileSpreadsheet,
+  Activity,
+  IndianRupee,
+  Ban,
+  Calendar as CalendarIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -38,7 +57,11 @@ function DashboardPage() {
   const navigate = useNavigate();
   const [globalSearch, setGlobalSearch] = useState("");
 
-  const { data: all = [], isLoading, refetch } = useQuery({
+  const {
+    data: all = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["documents", slug],
     queryFn: () => listAllDocuments(slug),
   });
@@ -91,9 +114,7 @@ function DashboardPage() {
         <div className="mt-3 mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{profile.name}</h1>
-            <p className="mt-0.5 text-sm font-medium uppercase tracking-widest text-primary">
-              Document Control Center
-            </p>
+            <p className="mt-0.5 text-sm font-medium uppercase tracking-widest text-primary">Document Control Center</p>
             <p className="mt-1 text-xs text-muted-foreground">GSTIN {profile.gstin}</p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -115,24 +136,33 @@ function DashboardPage() {
           </div>
         </div>
 
-        {/* Global search */}
-        <div className="mb-6 relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={globalSearch}
-            onChange={(e) => setGlobalSearch(e.target.value)}
-            placeholder="Search by Invoice / Challan number, Customer, or GSTIN…"
-            className="pl-9"
-          />
-        </div>
-
         {/* KPI cards */}
         <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          <StatCard label="Total Challans" value={all.filter(d => d.document_type === "challan").length} icon={<FileText className="h-4 w-4" />} tone="blue" />
-          <StatCard label="Total Invoices" value={all.filter(d => d.document_type === "invoice").length} icon={<Receipt className="h-4 w-4" />} tone="purple" />
+          <StatCard
+            label="Total Challans"
+            value={all.filter((d) => d.document_type === "challan").length}
+            icon={<FileText className="h-4 w-4" />}
+            tone="blue"
+          />
+          <StatCard
+            label="Total Invoices"
+            value={all.filter((d) => d.document_type === "invoice").length}
+            icon={<Receipt className="h-4 w-4" />}
+            tone="purple"
+          />
           <StatCard label="Cancelled" value={cancelled} icon={<Ban className="h-4 w-4" />} tone="red" />
-          <StatCard label="Today's Documents" value={todaysCount} icon={<CalendarIcon className="h-4 w-4" />} tone="emerald" />
-          <StatCard label="Monthly Revenue" value={`₹ ${monthlyRevenue.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`} icon={<IndianRupee className="h-4 w-4" />} tone="amber" />
+          <StatCard
+            label="Today's Documents"
+            value={todaysCount}
+            icon={<CalendarIcon className="h-4 w-4" />}
+            tone="emerald"
+          />
+          <StatCard
+            label="Monthly Revenue"
+            value={`₹ ${monthlyRevenue.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`}
+            icon={<IndianRupee className="h-4 w-4" />}
+            tone="amber"
+          />
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -166,7 +196,8 @@ function computeInvoiceTotal(payload: Record<string, unknown> | null): number {
   if (!payload) return 0;
   const rows = (payload["rows"] ?? []) as Array<{ qty?: string; rate?: string }>;
   const sub = rows.reduce((a, r) => {
-    const q = parseFloat(r.qty ?? ""); const rt = parseFloat(r.rate ?? "");
+    const q = parseFloat(r.qty ?? "");
+    const rt = parseFloat(r.rate ?? "");
     return isNaN(q) || isNaN(rt) ? a : a + q * rt;
   }, 0);
   const cgst = parseFloat((payload["cgstRate"] ?? "0") as string) || 0;
@@ -183,7 +214,17 @@ const TONE: Record<string, string> = {
   amber: "from-amber-500/20 to-amber-500/5 text-amber-700 dark:text-amber-300",
 };
 
-function StatCard({ label, value, icon, tone = "blue" }: { label: string; value: number | string; icon: React.ReactNode; tone?: keyof typeof TONE }) {
+function StatCard({
+  label,
+  value,
+  icon,
+  tone = "blue",
+}: {
+  label: string;
+  value: number | string;
+  icon: React.ReactNode;
+  tone?: keyof typeof TONE;
+}) {
   return (
     <div className={`glass relative overflow-hidden rounded-2xl p-4 bg-gradient-to-br ${TONE[tone]}`}>
       <div className="flex items-start justify-between">
@@ -197,17 +238,33 @@ function StatCard({ label, value, icon, tone = "blue" }: { label: string; value:
 
 function StatusBadge({ status }: { status: DocStatus }) {
   if (status === "cancelled") {
-    return <Badge variant="outline" className="border-red-300 bg-red-100 text-red-800">CANCELLED</Badge>;
+    return (
+      <Badge variant="outline" className="border-red-300 bg-red-100 text-red-800">
+        CANCELLED
+      </Badge>
+    );
   }
-  return <Badge variant="outline" className="border-green-300 bg-green-100 text-green-800">ACTIVE</Badge>;
+  return (
+    <Badge variant="outline" className="border-green-300 bg-green-100 text-green-800">
+      ACTIVE
+    </Badge>
+  );
 }
 
 const PAGE_SIZE = 10;
 
 function DocList({
-  slug, type, rows: allRows, loading, onChanged,
+  slug,
+  type,
+  rows: allRows,
+  loading,
+  onChanged,
 }: {
-  slug: string; type: DocType; rows: DocumentRow[]; loading: boolean; onChanged: () => void;
+  slug: string;
+  type: DocType;
+  rows: DocumentRow[];
+  loading: boolean;
+  onChanged: () => void;
 }) {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -258,28 +315,35 @@ function DocList({
   function toExportRows() {
     return filtered.map((r, i) => ({
       "S.No": i + 1,
-      "Type": r.document_type,
+      Type: r.document_type,
       "Doc No": r.document_number,
-      "Customer": r.customer_name,
-      "Date": new Date(r.created_at).toLocaleDateString(),
-      "Time": new Date(r.created_at).toLocaleTimeString(),
-      "Status": r.status,
+      Customer: r.customer_name,
+      Date: new Date(r.created_at).toLocaleDateString(),
+      Time: new Date(r.created_at).toLocaleTimeString(),
+      Status: r.status,
     }));
   }
 
   function exportCsv() {
     const rows = toExportRows();
-    if (rows.length === 0) { toast.error("Nothing to export."); return; }
+    if (rows.length === 0) {
+      toast.error("Nothing to export.");
+      return;
+    }
     const headers = Object.keys(rows[0]);
-    const csv = [headers.join(","), ...rows.map(r =>
-      headers.map(h => JSON.stringify((r as Record<string, unknown>)[h] ?? "")).join(",")
-    )].join("\n");
+    const csv = [
+      headers.join(","),
+      ...rows.map((r) => headers.map((h) => JSON.stringify((r as Record<string, unknown>)[h] ?? "")).join(",")),
+    ].join("\n");
     downloadBlob(new Blob([csv], { type: "text/csv;charset=utf-8;" }), `${type}-${slug}-${Date.now()}.csv`);
   }
 
   function exportXlsx() {
     const rows = toExportRows();
-    if (rows.length === 0) { toast.error("Nothing to export."); return; }
+    if (rows.length === 0) {
+      toast.error("Nothing to export.");
+      return;
+    }
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, type === "challan" ? "Challans" : "Invoices");
@@ -289,12 +353,48 @@ function DocList({
   return (
     <div className="glass rounded-2xl p-4">
       <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-        <Input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} />
-        <Input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} />
-        <Input value={docNo} onChange={(e) => { setDocNo(e.target.value); setPage(1); }} placeholder="Doc Number" />
-        <Input value={customer} onChange={(e) => { setCustomer(e.target.value); setPage(1); }} placeholder="Customer name" />
-        <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
-          <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
+        <Input
+          type="date"
+          value={dateFrom}
+          onChange={(e) => {
+            setDateFrom(e.target.value);
+            setPage(1);
+          }}
+        />
+        <Input
+          type="date"
+          value={dateTo}
+          onChange={(e) => {
+            setDateTo(e.target.value);
+            setPage(1);
+          }}
+        />
+        <Input
+          value={docNo}
+          onChange={(e) => {
+            setDocNo(e.target.value);
+            setPage(1);
+          }}
+          placeholder="Doc Number"
+        />
+        <Input
+          value={customer}
+          onChange={(e) => {
+            setCustomer(e.target.value);
+            setPage(1);
+          }}
+          placeholder="Customer name"
+        />
+        <Select
+          value={status}
+          onValueChange={(v) => {
+            setStatus(v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>
             <SelectItem value="active">Active</SelectItem>
@@ -332,12 +432,18 @@ function DocList({
           </TableHeader>
           <TableBody>
             {loading && (
-              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground">Loading…</TableCell></TableRow>
+              <TableRow>
+                <TableCell colSpan={7} className="text-center text-muted-foreground">
+                  Loading…
+                </TableCell>
+              </TableRow>
             )}
             {!loading && paged.length === 0 && (
-              <TableRow><TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
-                No {type === "challan" ? "challans" : "invoices"} found.
-              </TableCell></TableRow>
+              <TableRow>
+                <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                  No {type === "challan" ? "challans" : "invoices"} found.
+                </TableCell>
+              </TableRow>
             )}
             {paged.map((r, i) => {
               const dt = new Date(r.created_at);
@@ -348,7 +454,9 @@ function DocList({
                   <TableCell className="max-w-xs truncate">{r.customer_name}</TableCell>
                   <TableCell>{dt.toLocaleDateString()}</TableCell>
                   <TableCell>{dt.toLocaleTimeString()}</TableCell>
-                  <TableCell><StatusBadge status={r.status} /></TableCell>
+                  <TableCell>
+                    <StatusBadge status={r.status} />
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       <Button size="sm" variant="ghost" onClick={() => download(r)} title="Download">
@@ -359,8 +467,13 @@ function DocList({
                           <ExternalLink className="h-4 w-4" />
                         </Link>
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => setPendingDelete(r)}
-                        title="Delete" className="text-red-600 hover:text-red-700">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setPendingDelete(r)}
+                        title="Delete"
+                        className="text-red-600 hover:text-red-700"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -377,11 +490,25 @@ function DocList({
           Page {currentPage} of {totalPages}
         </p>
         <div className="flex gap-1">
-          <Button size="sm" variant="outline" disabled={currentPage <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}>Prev</Button>
-          <Button size="sm" variant="outline" disabled={currentPage >= totalPages}
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</Button>
-          <Button size="sm" variant="ghost" onClick={() => onChanged()}>Refresh</Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={currentPage <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            Prev
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={currentPage >= totalPages}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => onChanged()}>
+            Refresh
+          </Button>
         </div>
       </div>
 
@@ -393,8 +520,8 @@ function DocList({
               Are you sure you want to permanently delete this document? This cannot be undone.
               {pendingDelete && (
                 <span className="mt-2 block text-foreground">
-                  <strong>{pendingDelete.document_type === "challan" ? "Challan" : "Invoice"}</strong>
-                  {" "}#{pendingDelete.document_number} — {pendingDelete.customer_name}
+                  <strong>{pendingDelete.document_type === "challan" ? "Challan" : "Invoice"}</strong> #
+                  {pendingDelete.document_number} — {pendingDelete.customer_name}
                 </span>
               )}
             </AlertDialogDescription>
@@ -438,7 +565,9 @@ function RecentActivity({ rows }: { rows: DocumentRow[] }) {
         <ul className="space-y-2.5">
           {events.map((e, i) => (
             <li key={i} className="flex items-start gap-3 rounded-lg border border-border/60 bg-background/40 p-2.5">
-              <span className={`mt-0.5 inline-block h-2 w-2 shrink-0 rounded-full ${e.kind === "Cancelled" ? "bg-red-500" : "bg-emerald-500"}`} />
+              <span
+                className={`mt-0.5 inline-block h-2 w-2 shrink-0 rounded-full ${e.kind === "Cancelled" ? "bg-red-500" : "bg-emerald-500"}`}
+              />
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-semibold">
                   {e.kind} · {e.row.document_type === "challan" ? "Challan" : "Invoice"} #{e.row.document_number}
