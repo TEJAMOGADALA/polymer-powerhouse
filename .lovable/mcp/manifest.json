@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "sdk_version": "0.22.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://yxgjabztivyixxicxzcq.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "polymer-dms-mcp",
+      "version": "0.1.0",
+      "title": "Polymer DMS"
+    },
+    "tools": [
+      {
+        "name": "list_companies",
+        "title": "List companies",
+        "description": "List all polymer companies (SR Polymers, Shiva Sai Polymers, Surya Teja Poly Films) available in the workspace.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_invoices",
+        "title": "List invoices",
+        "description": "List tax invoices you created, optionally filtered by company slug or status. Returns invoice number, date, customer, total, and status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "company_slug": {
+              "type": "string",
+              "description": "Filter by company slug, e.g. 'shiva-sai-polymers'."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "generated",
+                "approved",
+                "cancelled"
+              ],
+              "description": "Filter by document status."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "description": "Max rows to return (default 50)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_challans",
+        "title": "List delivery challans",
+        "description": "List delivery challans you created, optionally filtered by company slug or status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "company_slug": {
+              "type": "string",
+              "description": "Filter by company slug."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "generated",
+                "approved",
+                "cancelled"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_document",
+        "title": "Get document details",
+        "description": "Fetch full details (line items, totals, customer info) for an invoice or delivery challan by document number.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "document_type": {
+              "type": "string",
+              "enum": [
+                "invoice",
+                "challan"
+              ],
+              "description": "Which document kind to look up."
+            },
+            "document_number": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The visible document number, e.g. 'INV/2026/001'."
+            }
+          },
+          "required": [
+            "document_type",
+            "document_number"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
