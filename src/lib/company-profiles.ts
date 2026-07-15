@@ -1,3 +1,7 @@
+import srpLogo from "@/assets/SRPLogo.png.asset.json";
+import sspLogo from "@/assets/SSPLogo.png.asset.json";
+import stpLogo from "@/assets/STPLogo.png.asset.json";
+
 export type CompanySlug = "shiva-sai-polymers" | "sr-polymers" | "suryateja-poly-films";
 
 export interface BankDetails {
@@ -11,6 +15,7 @@ export interface BankDetails {
 export interface CompanyProfile {
   slug: CompanySlug;
   name: string;
+  logoUrl?: string;
   gstin: string;
   pan?: string;
   udyam?: string;
@@ -22,6 +27,12 @@ export interface CompanyProfile {
   address?: string;
   bank: BankDetails;
 }
+
+export const COMPANY_LOGOS: Record<CompanySlug, string> = {
+  "sr-polymers": srpLogo.url,
+  "shiva-sai-polymers": sspLogo.url,
+  "suryateja-poly-films": stpLogo.url,
+};
 
 export const COMPANY_PROFILES: Record<CompanySlug, CompanyProfile> = {
   "shiva-sai-polymers": {
