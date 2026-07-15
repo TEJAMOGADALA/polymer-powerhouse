@@ -31,7 +31,7 @@ function ViewDocument() {
   if (isLoading || !doc) {
     return (
       <div className="min-h-screen">
-        <AppHeader title={`${profile.name}`} dashboardHref={`/company/${slug}/dashboard`} />
+        <AppHeader title={`${profile.name}`} logoUrl={profile.logoUrl} dashboardHref={`/company/${slug}/dashboard`} />
         <div className="mx-auto max-w-2xl px-4 py-10 text-center text-muted-foreground">Loading…</div>
       </div>
     );
