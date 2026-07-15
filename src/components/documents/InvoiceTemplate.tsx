@@ -122,6 +122,15 @@ export function InvoiceTemplate({ profile, value, onChange, readOnly, cancelled 
   const sgstAmt = (subTotal * parseFloat(data.sgstRate || "0")) / 100;
   const igstAmt = (subTotal * parseFloat(data.igstRate || "0")) / 100;
   const grandTotal = subTotal + cgstAmt + sgstAmt + igstAmt;
+  const autoWords = useMemo(() => amountInWords(grandTotal), [grandTotal]);
+  useEffect(() => {
+    if (autoWords && autoWords !== data.amountInWords) {
+      const next = { ...data, amountInWords: autoWords };
+      setData(next);
+      onChange?.(next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoWords]);
 
   const rateOpts: TaxRate[] = ["0", "2.5", "5", "9"];
   const igstOpts: TaxRate[] = ["0", "2.5", "5", "18"];
