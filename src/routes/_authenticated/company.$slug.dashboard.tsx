@@ -37,7 +37,6 @@ import {
   Receipt,
   ExternalLink,
   ArrowLeft,
-  Search,
   FileDown,
   FileSpreadsheet,
   Activity,
@@ -55,7 +54,6 @@ function DashboardPage() {
   const { slug } = Route.useParams();
   const profile = useMemo(() => getProfile(slug), [slug]);
   const navigate = useNavigate();
-  const [globalSearch, setGlobalSearch] = useState("");
 
   const {
     data: all = [],
@@ -71,21 +69,8 @@ function DashboardPage() {
     return null;
   }
 
-  const q = globalSearch.trim().toLowerCase();
-  const searched = q
-    ? all.filter((d) => {
-        const p = d.payload as Record<string, unknown> | null;
-        const gstin = (p?.["buyerGstin"] ?? p?.["gstin"] ?? "") as string;
-        return (
-          d.document_number.toLowerCase().includes(q) ||
-          d.customer_name.toLowerCase().includes(q) ||
-          String(gstin).toLowerCase().includes(q)
-        );
-      })
-    : all;
-
-  const challans = searched.filter((d) => d.document_type === "challan");
-  const invoices = searched.filter((d) => d.document_type === "invoice");
+  const challans = all.filter((d) => d.document_type === "challan");
+  const invoices = all.filter((d) => d.document_type === "invoice");
   const cancelled = all.filter((d) => d.status === "cancelled").length;
   const today = new Date().toDateString();
   const todaysCount = all.filter((d) => new Date(d.created_at).toDateString() === today).length;
